@@ -1,0 +1,49 @@
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Thumbnails
+Thumbs.db
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# WoW SavedVariables (user-specific)
+*.lua.bak
+*.lua~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*~
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# Build artifacts (if using packager)
+.release/
+.pkgmeta
+*.toc.bak
+
+# Git
+.git/
