@@ -548,7 +548,7 @@ local function CreateArrowSettingsPanel()
 
     xPos = xPos + buttonWidth + buttonSpacing
 
-    for i = 0, 51 do
+    for i = 0, 72 do
         if xPos + buttonWidth > 530 then
             xPos = 8
             yOffset = yOffset - rowHeight

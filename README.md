@@ -62,12 +62,24 @@ See **[Development](#development)** section at bottom for full setup details.
 
 ## Installation
 
-1. Download or clone this repository
-2. Copy the entire `CrosshairsPlus` folder to your WoW AddOns directory:
+### For End Users
+
+1. Download the latest release ZIP from CurseForge
+2. Extract and copy the `CrosshairsPlus` folder to your WoW AddOns directory:
    - **Windows:** `World of Warcraft\_retail_\Interface\AddOns\CrosshairsPlus\`
    - **macOS:** `World of Warcraft/_retail_/Interface/AddOns/CrosshairsPlus/`
 3. Restart World of Warcraft or type `/reload` in-game
 4. Configure settings with `/crosshairsplus` or `/chp`
+
+### For Developers
+
+1. Clone this repository
+2. Run the build script to create a distribution package:
+   ```bash
+   ./build.sh
+   ```
+3. The packaged addon will be created at `build/CrosshairsPlus-1.0.0.zip`
+4. Extract and install to your AddOns folder for testing
 
 ### Settings Location
 **ESC → Interface → AddOns → CrosshairsPlus**
@@ -308,6 +320,12 @@ The modular structure makes it easy to extend:
 **Author:** asp1d
 **License:** All Rights Reserved
 **Version:** 1.0.0 (2025-11-08)
+
+### Special Thanks
+
+- **ElvUI** - For providing the arrow icon textures used in this addon
+- **Mesostealthy** - Thank you for weizPvP, which served as inspiration
+- **semlar** - Thank you for Crosshairs addon, which helped shape this project
 
 ## Changelog
 
