@@ -685,7 +685,9 @@ end
 
 -- Initialize settings panel
 function CPlusNS.InitializeSettings()
-    print("|cff00ff00CrosshairsPlus|r: InitializeSettings called")
+    if CPlusNS.db and CPlusNS.db.debugMode then
+        print("|cff00ff00CrosshairsPlus|r: InitializeSettings called")
+    end
 
     -- Create the settings frames
     local success, err = pcall(function()
@@ -700,7 +702,9 @@ function CPlusNS.InitializeSettings()
         return
     end
 
-    print("|cff00ff00CrosshairsPlus|r: Settings frames created")
+    if CPlusNS.db and CPlusNS.db.debugMode then
+        print("|cff00ff00CrosshairsPlus|r: Settings frames created")
+    end
 
     -- Register with modern Settings API (Retail 10.0+)
     if Settings and Settings.RegisterCanvasLayoutCategory then
@@ -754,7 +758,9 @@ function CPlusNS.InitializeSettings()
         end)
 
         if success2 then
-            print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (modern API)")
+            if CPlusNS.db and CPlusNS.db.debugMode then
+                print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (modern API)")
+            end
         else
             print("|cffff0000CrosshairsPlus|r: Error registering settings: " .. tostring(err2))
         end
@@ -788,7 +794,9 @@ function CPlusNS.InitializeSettings()
         InterfaceOptions_AddCategory(lineSettingsFrame)
         InterfaceOptions_AddCategory(arrowSettingsFrame)
 
-        print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (legacy API)")
+        if CPlusNS.db and CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (legacy API)")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: Warning - Could not register settings panel (Settings=" .. tostring(Settings) .. ", InterfaceOptions_AddCategory=" .. tostring(InterfaceOptions_AddCategory) .. ")")
     end

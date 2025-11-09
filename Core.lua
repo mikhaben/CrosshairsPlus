@@ -100,34 +100,47 @@ end)
 
 -- PLAYER_LOGIN event
 function CPlusNS:PLAYER_LOGIN()
-    print("|cff00ff00CrosshairsPlus|r: PLAYER_LOGIN event fired")
-
     InitializeDatabase()
-    print("|cff00ff00CrosshairsPlus|r: Database initialized")
+
+    -- Debug logging for initialization
+    if CPlusNS.db.debugMode then
+        print("|cff00ff00CrosshairsPlus|r: PLAYER_LOGIN event fired")
+        print("|cff00ff00CrosshairsPlus|r: Database initialized")
+    end
 
     -- Check if crosshair frame exists
     if CrosshairsPlusFrame then
-        print("|cff00ff00CrosshairsPlus|r: CrosshairsPlusFrame found")
+        if CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: CrosshairsPlusFrame found")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: ERROR - CrosshairsPlusFrame not found!")
+        return
     end
 
     -- Initialize crosshair system
     if CPlusNS.InitializeCrosshair then
         CPlusNS.InitializeCrosshair()
-        print("|cff00ff00CrosshairsPlus|r: Crosshair system initialized")
+        if CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: Crosshair system initialized")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: ERROR - InitializeCrosshair function not found!")
+        return
     end
 
     -- Initialize settings panel
     if CPlusNS.InitializeSettings then
         CPlusNS.InitializeSettings()
-        print("|cff00ff00CrosshairsPlus|r: Settings panel initialized")
+        if CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: Settings panel initialized")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: ERROR - InitializeSettings function not found!")
+        return
     end
 
+    -- Only show this message (user-facing, not debug)
     print("|cff00ff00CrosshairsPlus|r v" .. CPlusNS.Version .. " loaded. Type /crosshairsplus for options.")
 end
 

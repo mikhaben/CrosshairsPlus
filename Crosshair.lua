@@ -265,13 +265,10 @@ local function AttachToNameplate(nameplate)
 
     -- Update visuals
     CPlusNS.UpdateLineThickness()
+    CPlusNS.UpdateLineGap()
     CPlusNS.UpdateLineVisibility()
     CPlusNS.UpdateArrowStyle()
     CPlusNS.UpdateCircleStyle()
-
-    -- Get color and apply
-    local r, g, b = CPlusNS.GetUnitColor("target")
-    ApplyColorToTextures(r, g, b)
 
     -- Hide unused text elements
     HideTextElements()
@@ -283,6 +280,15 @@ local function AttachToNameplate(nameplate)
     else
         if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: Frame already showing, just repositioned") end
     end
+
+    -- CRITICAL: Always update color AFTER showing frame (moved here to avoid duplicate code)
+    -- This ensures immediate color update on target change
+    local r, g, b = CPlusNS.GetUnitColor("target")
+    if CPlusNS.db and CPlusNS.db.debugMode then
+        local targetName = GetUnitName("target", false) or "Unknown"
+        print(string.format("Applying color to %s: R=%.2f G=%.2f B=%.2f", targetName, r, g, b))
+    end
+    ApplyColorToTextures(r, g, b)
 
     -- Restore user's alpha setting after showing
     frame:SetAlpha(CPlusNS.db.crosshairAlpha or 1.0)
@@ -303,6 +309,9 @@ end
 local function OnTargetChanged()
     local unit = "target"
 
+    -- Reset update timer to prevent stale color updates
+    updateTimer = 0
+
     if not UnitExists(unit) then
         HideCrosshair()
         return
@@ -318,6 +327,7 @@ local function OnTargetChanged()
     local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 
     if nameplate then
+        -- AttachToNameplate already updates colors immediately
         AttachToNameplate(nameplate)
     else
         HideCrosshair()
@@ -568,10 +578,10 @@ function CPlusNS.UpdateArrowStyle()
             print("UpdateArrowStyle: Rotation DISABLED, set static positions")
         end
     else
-        -- Rotation is enabled, reset angle to start fresh
-        rotationAngle = 0
+        -- Rotation is enabled, keep angle continuous (don't reset)
+        -- Note: rotationAngle will be 0 on first load, then continues from there
         if CPlusNS.db and CPlusNS.db.debugMode then
-            print("UpdateArrowStyle: Rotation ENABLED, reset angle")
+            print("UpdateArrowStyle: Rotation ENABLED, angle=" .. tostring(rotationAngle))
         end
     end
 end
@@ -636,26 +646,33 @@ function CPlusNS.InitializeCrosshair()
         return
     end
 
-    print("|cff00ff00CrosshairsPlus|r: Frame reference acquired: " .. tostring(frame))
-
-    -- No fade animations - instant show/hide
+    -- Debug: Frame reference acquired
+    if CPlusNS.db and CPlusNS.db.debugMode then
+        print("|cff00ff00CrosshairsPlus|r: Frame reference acquired: " .. tostring(frame))
+    end
 
     -- Check if child elements exist (set in OnLoad script of XML)
     if frame.Core then
-        print("|cff00ff00CrosshairsPlus|r: Core texture found")
+        if CPlusNS.db and CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: Core texture found")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: WARNING - Core texture not found!")
     end
 
     if frame.TopLine then
-        print("|cff00ff00CrosshairsPlus|r: Lines found")
+        if CPlusNS.db and CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: Lines found")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: WARNING - Lines not found!")
     end
 
     -- Check if 4 arrow frames exist
     if frame.ArrowTop and frame.ArrowRight and frame.ArrowBottom and frame.ArrowLeft then
-        print("|cff00ff00CrosshairsPlus|r: 4 Arrow frames found")
+        if CPlusNS.db and CPlusNS.db.debugMode then
+            print("|cff00ff00CrosshairsPlus|r: 4 Arrow frames found")
+        end
     else
         print("|cffff0000CrosshairsPlus|r: WARNING - Arrow frames not found!")
         print("  ArrowTop: " .. tostring(frame.ArrowTop ~= nil))
@@ -672,7 +689,9 @@ function CPlusNS.InitializeCrosshair()
     CPlusNS.EventFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
     CPlusNS.EventFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 
-    print("|cff00ff00CrosshairsPlus|r: Events registered")
+    if CPlusNS.db and CPlusNS.db.debugMode then
+        print("|cff00ff00CrosshairsPlus|r: Events registered")
+    end
 
     -- Initial setup - wrapped in pcall to catch errors
     local success, err = pcall(function()
@@ -686,7 +705,7 @@ function CPlusNS.InitializeCrosshair()
 
     if not success then
         print("|cffff0000CrosshairsPlus|r: Error in visual setup: " .. tostring(err))
-    else
+    elseif CPlusNS.db and CPlusNS.db.debugMode then
         print("|cff00ff00CrosshairsPlus|r: Crosshair visuals configured")
     end
 end
