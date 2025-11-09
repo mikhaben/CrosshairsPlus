@@ -494,12 +494,8 @@ function CPlusNS.UpdateArrowStyle()
         if frame.ArrowBottom then frame.ArrowBottom:Hide() end
         if frame.ArrowLeft then frame.ArrowLeft:Hide() end
         return
-    elseif arrowStyle == "rotating" then
-        texturePath = "Interface\\AddOns\\CrosshairsPlus\\Assets\\4Arrows"
-    elseif arrowStyle == "kos" then
-        texturePath = "Interface\\AddOns\\CrosshairsPlus\\Assets\\4ArrowsKOS"
     elseif arrowStyle:match("^arrow%d+$") then
-        -- Handle arrow0, arrow1, arrow2, ... arrow72
+        -- Handle arrow0, arrow1, arrow2, ... arrow50
         local arrowNum = arrowStyle:match("^arrow(%d+)$")
         texturePath = "Interface\\AddOns\\CrosshairsPlus\\Assets\\Arrow" .. arrowNum
     else

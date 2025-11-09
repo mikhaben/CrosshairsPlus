@@ -111,8 +111,7 @@ CrosshairsPlus/
 ├── Crosshair.lua            # Target filtering, rendering logic, nameplate attachment
 ├── Settings.lua             # Configuration UI using modern Settings API
 ├── Assets/                  # Texture files
-│   ├── Arrow0.tga - Arrow72.tga  # 73 arrow style options
-│   ├── ArrowRed.tga         # Red arrow variant
+│   ├── Arrow[n].tga         # Arrow textures
 │   ├── circle.blp           # Circle texture
 │   ├── core.tga             # Core center texture
 │   ├── shadow.tga           # Shadow effect
@@ -165,7 +164,7 @@ CrosshairsPlus/
 
 **Assets/**
 - All texture files (.tga and .blp formats)
-- 73 different arrow styles numbered 0-72
+- A lot of different arrow styles numbered
 - Circle, core, shadow, and effect textures
 - Referenced by XML and Lua code via relative paths
 
@@ -227,7 +226,7 @@ arrowRotationSpeed = 5.0
 
 ### Changing Arrow Styles
 1. Open settings → Arrow Settings
-2. Select from dropdown (arrow0 through arrow72)
+2. Select from dropdown (arrow[n])
 3. Each style has unique visual appearance
 4. Preview appears immediately on your current target
 
@@ -306,10 +305,6 @@ The modular structure makes it easy to extend:
 
 ## Credits
 
-**Inspiration & Reference:**
-- **weizPVP Crosshair** - Visual style, frame structure, and crosshair concept
-- **Semlar's Crosshairs** - Universal target filtering approach
-
 **Author:** asp1d
 **License:** All Rights Reserved
 **Version:** 1.0.0 (2025-11-08)
@@ -346,7 +341,3 @@ Potential features for future versions:
 ## Support
 
 For questions, bug reports, or feature requests, please use the appropriate platform for your installation method.
-
-## Contributing
-
-This addon combines elements from weizPVP's Crosshair and Semlar's Crosshairs. If you'd like to contribute improvements or report issues, standard addon development practices apply.

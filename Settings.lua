@@ -548,8 +548,7 @@ local function CreateArrowSettingsPanel()
 
     xPos = xPos + buttonWidth + buttonSpacing
 
-    -- Add ALL numbered arrow styles (0-72) in grid layout
-    for i = 0, 72 do
+    for i = 0, 51 do
         if xPos + buttonWidth > 530 then
             xPos = 8
             yOffset = yOffset - rowHeight
