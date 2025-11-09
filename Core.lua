@@ -25,6 +25,9 @@ local defaults = {
     enableClassColors = true,
     showLines = true,
 
+    -- Debug
+    debugMode = false,
+
     -- Style settings
     arrowStyle = "arrow0",
     circleStyle = "default",

@@ -9,8 +9,8 @@ local AddonName, CPlusNS = ...
 local frame
 local currentNameplate = nil
 local updateTimer = 0
-local UPDATE_INTERVAL = 0.05 -- Update every 0.05 seconds (20fps) for responsive nameplate detection
-local debugMode = false -- Set to true to enable debug logging
+local UPDATE_INTERVAL = 0.3 -- Update every 0.3 seconds for color/range checks (color changes are rare)
+local lastNameplateWidth = 0 -- Cache last nameplate width to avoid redundant resizing
 
 -- Check if target should show crosshair based on user settings
 function CPlusNS.ShouldShowCrosshair(unit)
@@ -28,13 +28,13 @@ function CPlusNS.ShouldShowCrosshair(unit)
             return db.showFriendlyPlayers
         end
     else
-        -- NPC/Creature
+        -- NPC/Creature (including hunter/warlock pets)
         local isHostile = UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)
 
-        -- Check if it's a critter
+        -- Skip critters (trivial/ambient creatures like rabbits, squirrels)
         local classification = UnitClassification(unit)
         if classification == "trivial" or classification == "minus" then
-            return db.showCritters
+            return false  -- Never show crosshair on critters
         end
 
         if isHostile then
@@ -81,6 +81,12 @@ end
 
 -- Apply color to all crosshair textures
 local function ApplyColorToTextures(r, g, b)
+    -- Skip if frame is not visible
+    if not frame:IsShown() then
+        return
+    end
+
+    -- Core elements (always visible when frame is shown)
     if frame.Core then
         frame.Core:SetVertexColor(r, g, b)
     end
@@ -88,18 +94,26 @@ local function ApplyColorToTextures(r, g, b)
         frame.CoreGlow:SetVertexColor(r, g, b)
     end
 
-    -- Apply to 4 individual arrows
-    if frame.ArrowTop then frame.ArrowTop:SetVertexColor(r, g, b) end
-    if frame.ArrowRight then frame.ArrowRight:SetVertexColor(r, g, b) end
-    if frame.ArrowBottom then frame.ArrowBottom:SetVertexColor(r, g, b) end
-    if frame.ArrowLeft then frame.ArrowLeft:SetVertexColor(r, g, b) end
+    -- Only update arrows if they're enabled (not "none")
+    if CPlusNS.db.arrowStyle ~= "none" then
+        if frame.ArrowTop then frame.ArrowTop:SetVertexColor(r, g, b) end
+        if frame.ArrowRight then frame.ArrowRight:SetVertexColor(r, g, b) end
+        if frame.ArrowBottom then frame.ArrowBottom:SetVertexColor(r, g, b) end
+        if frame.ArrowLeft then frame.ArrowLeft:SetVertexColor(r, g, b) end
+    end
 
-    -- Apply to lines if enabled
-    if CPlusNS.db.showLines then
-        if frame.TopLine then frame.TopLine:SetVertexColor(r, g, b) end
-        if frame.BottomLine then frame.BottomLine:SetVertexColor(r, g, b) end
-        if frame.LeftLine then frame.LeftLine:SetVertexColor(r, g, b) end
-        if frame.RightLine then frame.RightLine:SetVertexColor(r, g, b) end
+    -- Only update lines if shown
+    if frame.TopLine and frame.TopLine:IsShown() then
+        frame.TopLine:SetVertexColor(r, g, b)
+    end
+    if frame.BottomLine and frame.BottomLine:IsShown() then
+        frame.BottomLine:SetVertexColor(r, g, b)
+    end
+    if frame.LeftLine and frame.LeftLine:IsShown() then
+        frame.LeftLine:SetVertexColor(r, g, b)
+    end
+    if frame.RightLine and frame.RightLine:IsShown() then
+        frame.RightLine:SetVertexColor(r, g, b)
     end
 end
 
@@ -107,6 +121,11 @@ end
 function CPlusNS.UpdateLineThickness()
     if not frame then
         print("|cffff0000CrosshairsPlus|r: UpdateLineThickness called but frame is nil!")
+        return
+    end
+
+    -- Skip if lines are disabled
+    if not CPlusNS.db.showLines then
         return
     end
 
@@ -129,6 +148,11 @@ end
 -- Update line gap from center
 function CPlusNS.UpdateLineGap()
     if not frame or not frame.Core then
+        return
+    end
+
+    -- Skip if lines are disabled
+    if not CPlusNS.db.showLines then
         return
     end
 
@@ -175,32 +199,12 @@ function CPlusNS.UpdateLineVisibility()
     if frame.RightLine then frame.RightLine:SetShown(showLines) end
 end
 
--- Update range display (disabled - range feature removed)
-local function UpdateRange(unit)
+-- Hide unused text elements (range and name features not implemented)
+local function HideTextElements()
     if frame.RangeText then
         frame.RangeText:Hide()
     end
-end
-
--- Update name display
-local function UpdateName(unit)
-    if not CPlusNS.db.showName or not frame.NameText then
-        if frame.NameText then
-            frame.NameText:Hide()
-        end
-        return
-    end
-
-    if not unit or not UnitExists(unit) then
-        frame.NameText:Hide()
-        return
-    end
-
-    local name = GetUnitName(unit, false)
-    if name and name ~= "Unknown" then
-        frame.NameText:SetText(name)
-        frame.NameText:Show()
-    else
+    if frame.NameText then
         frame.NameText:Hide()
     end
 end
@@ -208,19 +212,19 @@ end
 -- Attach crosshair to nameplate
 local function AttachToNameplate(nameplate)
     if not nameplate then
-        if debugMode then print("AttachToNameplate: nameplate is nil!") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: nameplate is nil!") end
         return
     end
 
     -- CRITICAL: Verify this nameplate actually belongs to our target
     if not UnitExists("target") then
-        if debugMode then print("AttachToNameplate: No target exists!") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: No target exists!") end
         return
     end
 
     local targetNameplate = C_NamePlate.GetNamePlateForUnit("target")
     if targetNameplate ~= nameplate then
-        if debugMode then
+        if CPlusNS.db and CPlusNS.db.debugMode then
             print("AttachToNameplate: ERROR - nameplate mismatch!")
             print("  Passed nameplate: " .. tostring(nameplate))
             print("  Target nameplate: " .. tostring(targetNameplate))
@@ -228,7 +232,7 @@ local function AttachToNameplate(nameplate)
         return
     end
 
-    if debugMode then
+    if CPlusNS.db and CPlusNS.db.debugMode then
         local targetName = GetUnitName("target", false) or "Unknown"
         print("AttachToNameplate: attaching to " .. targetName .. ", wasShown=" .. tostring(frame:IsShown()))
     end
@@ -240,16 +244,19 @@ local function AttachToNameplate(nameplate)
     frame:SetParent(nameplate)
     frame:SetPoint("CENTER")
 
-    -- Dynamic sizing based on nameplate width
+    -- Dynamic sizing based on nameplate width (cached to avoid redundant resizing)
     local width = nameplate:GetWidth() + 14
-    if frame.Core then
-        frame.Core:SetSize(width, width)
-    end
-    if frame.CoreGlow then
-        frame.CoreGlow:SetSize(width, width)
-    end
-    if frame.CoreShadow then
-        frame.CoreShadow:SetSize(width, width)
+    if width ~= lastNameplateWidth then
+        lastNameplateWidth = width
+        if frame.Core then
+            frame.Core:SetSize(width, width)
+        end
+        if frame.CoreGlow then
+            frame.CoreGlow:SetSize(width, width)
+        end
+        if frame.CoreShadow then
+            frame.CoreShadow:SetSize(width, width)
+        end
     end
 
     -- Apply scale
@@ -266,16 +273,15 @@ local function AttachToNameplate(nameplate)
     local r, g, b = CPlusNS.GetUnitColor("target")
     ApplyColorToTextures(r, g, b)
 
-    -- Update text displays
-    UpdateName("target")
-    UpdateRange("target")
+    -- Hide unused text elements
+    HideTextElements()
 
     -- Show frame (instant, no fade)
     if not frame:IsShown() then
-        if debugMode then print("AttachToNameplate: Showing frame (was hidden)") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: Showing frame (was hidden)") end
         frame:Show()
     else
-        if debugMode then print("AttachToNameplate: Frame already showing, just repositioned") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: Frame already showing, just repositioned") end
     end
 
     -- Restore user's alpha setting after showing
@@ -284,10 +290,10 @@ end
 
 -- Hide crosshair
 local function HideCrosshair()
-    if debugMode then print("HideCrosshair called, IsShown=" .. tostring(frame:IsShown())) end
+    if CPlusNS.db and CPlusNS.db.debugMode then print("HideCrosshair called, IsShown=" .. tostring(frame:IsShown())) end
 
     if frame:IsShown() then
-        if debugMode then print("Hiding frame instantly (no fade)") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("Hiding frame instantly (no fade)") end
         frame:Hide()
     end
     currentNameplate = nil
@@ -332,6 +338,20 @@ local arrowData = {
 -- Reusable variables to avoid garbage collection
 local angle, radians, x, y, arrowRotation
 
+-- Cached rotation settings (updated when settings change)
+local cachedSpeed = 5.0
+local cachedRadius = 56
+local cachedCounterClockwise = false
+
+-- Refresh cached rotation settings (call when settings change)
+local function RefreshRotationCache()
+    if CPlusNS.db then
+        cachedSpeed = CPlusNS.db.arrowRotationSpeed or 5.0
+        cachedRadius = CPlusNS.db.arrowDistance or 56
+        cachedCounterClockwise = CPlusNS.db.arrowsRotateCounterClockwise or false
+    end
+end
+
 -- Update arrow rotation (called from OnUpdate)
 -- Makes arrows orbit around the circle while pointing toward center
 local function UpdateArrowRotation(elapsed)
@@ -339,16 +359,22 @@ local function UpdateArrowRotation(elapsed)
         return
     end
 
+    -- CRITICAL: Don't rotate if arrows are disabled
+    if CPlusNS.db.arrowStyle == "none" then
+        return
+    end
+
     if not frame or not frame.ArrowTop or not frame.Core then
-        if debugMode then
+        if CPlusNS.db and CPlusNS.db.debugMode then
             print("UpdateArrowRotation: frame or arrows not found")
         end
         return
     end
 
-    local speed = CPlusNS.db.arrowRotationSpeed or 5.0
-    local radius = CPlusNS.db.arrowDistance or 56
-    local counterClockwise = CPlusNS.db.arrowsRotateCounterClockwise or false
+    -- Use cached settings for performance (updated when settings change)
+    local speed = cachedSpeed
+    local radius = cachedRadius
+    local counterClockwise = cachedCounterClockwise
 
     -- Calculate rotation increment (360 degrees in 'speed' seconds)
     -- Default is clockwise (positive), checkbox enables counter-clockwise (negative)
@@ -409,21 +435,24 @@ local function OnUpdate(self, elapsed)
         return
     end
 
+    -- CRITICAL: Exit immediately if frame is hidden to avoid wasted CPU cycles
+    if not frame:IsShown() then
+        updateTimer = 0  -- Reset timer when hidden
+        return
+    end
+
     updateTimer = updateTimer + elapsed
 
     -- Update arrow rotation every frame if enabled
-    if frame:IsShown() and CPlusNS.db.arrowsRotate then
+    if CPlusNS.db.arrowsRotate then
         UpdateArrowRotation(elapsed)
     end
 
     if updateTimer >= UPDATE_INTERVAL then
         updateTimer = 0
 
-        -- Only update range and color, DO NOT hide/show (let events handle that)
-        if frame:IsShown() and UnitExists("target") then
-            -- Update range
-            UpdateRange("target")
-
+        -- Only update color, DO NOT hide/show (let events handle that)
+        if UnitExists("target") then
             -- Update color in case it changed (e.g., tapped by someone else)
             local r, g, b = CPlusNS.GetUnitColor("target")
             ApplyColorToTextures(r, g, b)
@@ -472,25 +501,34 @@ function CPlusNS.UpdateArrowStyle()
     local arrowSize = CPlusNS.db.arrowSize or 32
 
     -- Apply texture and size to all 4 arrows
+    -- Note: Don't unconditionally call :Show() as it overrides "none" setting
     if frame.ArrowTop then
         frame.ArrowTop:SetTexture(texturePath)
         frame.ArrowTop:SetSize(arrowSize, arrowSize)
-        frame.ArrowTop:Show()
+        if not frame.ArrowTop:IsShown() and frame:IsShown() then
+            frame.ArrowTop:Show()
+        end
     end
     if frame.ArrowRight then
         frame.ArrowRight:SetTexture(texturePath)
         frame.ArrowRight:SetSize(arrowSize, arrowSize)
-        frame.ArrowRight:Show()
+        if not frame.ArrowRight:IsShown() and frame:IsShown() then
+            frame.ArrowRight:Show()
+        end
     end
     if frame.ArrowBottom then
         frame.ArrowBottom:SetTexture(texturePath)
         frame.ArrowBottom:SetSize(arrowSize, arrowSize)
-        frame.ArrowBottom:Show()
+        if not frame.ArrowBottom:IsShown() and frame:IsShown() then
+            frame.ArrowBottom:Show()
+        end
     end
     if frame.ArrowLeft then
         frame.ArrowLeft:SetTexture(texturePath)
         frame.ArrowLeft:SetSize(arrowSize, arrowSize)
-        frame.ArrowLeft:Show()
+        if not frame.ArrowLeft:IsShown() and frame:IsShown() then
+            frame.ArrowLeft:Show()
+        end
     end
 
     -- Set initial positions and rotation
@@ -526,13 +564,13 @@ function CPlusNS.UpdateArrowStyle()
             frame.ArrowLeft:SetRotation(math.rad(-90))  -- At left, point RIGHT (-90°/270°)
         end
 
-        if debugMode then
+        if CPlusNS.db and CPlusNS.db.debugMode then
             print("UpdateArrowStyle: Rotation DISABLED, set static positions")
         end
     else
         -- Rotation is enabled, reset angle to start fresh
         rotationAngle = 0
-        if debugMode then
+        if CPlusNS.db and CPlusNS.db.debugMode then
             print("UpdateArrowStyle: Rotation ENABLED, reset angle")
         end
     end
@@ -557,6 +595,9 @@ end
 
 -- Update all crosshair visuals (called from settings panel)
 function CPlusNS.UpdateCrosshairVisuals()
+    -- Refresh cached settings for performance
+    RefreshRotationCache()
+
     CPlusNS.UpdateLineThickness()
     CPlusNS.UpdateLineGap()
     CPlusNS.UpdateLineVisibility()
@@ -566,8 +607,7 @@ function CPlusNS.UpdateCrosshairVisuals()
     if frame:IsShown() and UnitExists("target") then
         local r, g, b = CPlusNS.GetUnitColor("target")
         ApplyColorToTextures(r, g, b)
-        UpdateName("target")
-        UpdateRange("target")
+        HideTextElements()
 
         frame:SetScale(CPlusNS.db.crosshairScale or 1.0)
         frame:SetAlpha(CPlusNS.db.crosshairAlpha or 1.0)
@@ -576,8 +616,8 @@ end
 
 -- Toggle debug mode
 function CPlusNS.ToggleDebug()
-    debugMode = not debugMode
-    if debugMode then
+    CPlusNS.db.debugMode = not CPlusNS.db.debugMode
+    if CPlusNS.db.debugMode then
         print("|cff00ff00CrosshairsPlus|r: Debug mode ENABLED")
         print("Watch chat for crosshair events during camera movement")
     else
@@ -636,6 +676,7 @@ function CPlusNS.InitializeCrosshair()
 
     -- Initial setup - wrapped in pcall to catch errors
     local success, err = pcall(function()
+        RefreshRotationCache()  -- Cache rotation settings
         CPlusNS.UpdateLineThickness()
         CPlusNS.UpdateLineGap()
         CPlusNS.UpdateLineVisibility()
@@ -667,17 +708,17 @@ function CPlusNS:NAME_PLATE_UNIT_ADDED(unitToken)
 
     -- Check if this nameplate is for our current target (note parameter order!)
     if nameplate and UnitIsUnit("target", unitToken) then
-        if debugMode then
+        if CPlusNS.db and CPlusNS.db.debugMode then
             local targetName = GetUnitName("target", false) or "Unknown"
             print("NAMEPLATE_ADDED for target: " .. targetName .. ", nameplate=" .. tostring(nameplate))
         end
 
         -- Check if we should show crosshair for this target
         if CPlusNS.ShouldShowCrosshair("target") then
-            if debugMode then print("Attaching to nameplate from ADDED event") end
+            if CPlusNS.db and CPlusNS.db.debugMode then print("Attaching to nameplate from ADDED event") end
             AttachToNameplate(nameplate)
         else
-            if debugMode then print("Target exists but should NOT show crosshair (filtered out)") end
+            if CPlusNS.db and CPlusNS.db.debugMode then print("Target exists but should NOT show crosshair (filtered out)") end
         end
     end
 end
@@ -686,7 +727,7 @@ end
 function CPlusNS:NAME_PLATE_UNIT_REMOVED(unitToken)
     -- Check if the removed unit is our target
     if UnitIsUnit("target", unitToken) then
-        if debugMode then print("NAMEPLATE_REMOVED for target - hiding") end
+        if CPlusNS.db and CPlusNS.db.debugMode then print("NAMEPLATE_REMOVED for target - hiding") end
         HideCrosshair()
     end
 end

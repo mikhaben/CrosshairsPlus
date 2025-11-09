@@ -10,6 +10,31 @@ A World of Warcraft addon that displays a customizable crosshair overlay on enem
 
 CrosshairsPlus is an enhanced crosshair addon that attaches a visual marker to your current target's nameplate. It provides extensive customization options including multiple visual styles, target filtering, animated arrows, and class-based coloring. The crosshair follows your target's position on screen, making it easier to track enemies in PvP or important targets in PvE content.
 
+---
+
+## For Developers / Debugging
+
+**Quick Start for Development:**
+1. Enable error logging: `/console scriptErrors 1`
+2. Enable debug mode: `/chp debug`
+3. Reload addon: `/reload`
+
+**Debug Commands:**
+- `/chp debug` - Toggle verbose logging for crosshair events
+- `/chp test` - Show diagnostic info (frame state, target, settings)
+- `/chp show` - Force crosshair to screen center (testing)
+- `/chp rotate` - Display rotation diagnostics
+- `/chp hide` - Hide crosshair
+
+**Useful Console Commands:**
+- `/console scriptErrors 1` - Show Lua errors in-game
+- `/console taintLog 2` - Enable taint logging
+- `/framestack` - Show frame hierarchy under cursor
+
+See **[Development](#development)** section at bottom for full setup details.
+
+---
+
 ## Features
 
 ### Core Functionality
@@ -282,9 +307,10 @@ The modular structure makes it easy to extend:
 
 ### Debug Commands
 ```
-/chp debug     # Toggle debug mode (if implemented)
+/chp debug     # Toggle debug mode for verbose event logging
 /chp test      # Show frame state, target info, settings
-/chp show      # Force show at screen center
+/chp show      # Force show at screen center (testing)
+/chp hide      # Hide crosshair
 /chp rotate    # Rotation diagnostics
 ```
 

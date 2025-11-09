@@ -17,11 +17,10 @@ function CPlusNS.ValidateSettings(db)
         "showFriendlyPlayers",
         "showHostileNPCs",
         "showFriendlyNPCs",
-        "showCritters",
-        "showRange",
-        "showName",
         "enableClassColors",
         "showLines",
+        "arrowsRotate",
+        "arrowsRotateCounterClockwise",
     }
 
     for _, field in ipairs(booleanFields) do
@@ -45,11 +44,11 @@ function CPlusNS.ValidateSettings(db)
 
     -- Ensure string values are strings
     if type(db.arrowStyle) ~= "string" then
-        db.arrowStyle = "rotating"
+        db.arrowStyle = "arrow0"
     end
 
-    if type(db.visualStyle) ~= "string" then
-        db.visualStyle = "default"
+    if type(db.circleStyle) ~= "string" then
+        db.circleStyle = "default"
     end
 
     return true
