@@ -1,0 +1,13 @@
+## Interface: 110002
+## Title: CrosshairsPlus
+## Notes: Enhanced crosshair addon with customizable target filtering and visual styles
+## Author: asp1d
+## Version: 1.0.0
+## SavedVariables: CrosshairsPlusDB
+
+# Core files
+Utils.lua
+Core.lua
+Crosshair.xml
+Crosshair.lua
+Settings.lua
