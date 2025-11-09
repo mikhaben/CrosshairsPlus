@@ -63,21 +63,11 @@ See **[Development](#development)** section at bottom for full setup details.
 ## Installation
 
 1. Download or clone this repository
-2. Copy the entire `crosshairs-mod` folder to your WoW AddOns directory:
+2. Copy the entire `CrosshairsPlus` folder to your WoW AddOns directory:
    - **Windows:** `World of Warcraft\_retail_\Interface\AddOns\CrosshairsPlus\`
    - **macOS:** `World of Warcraft/_retail_/Interface/AddOns/CrosshairsPlus/`
 3. Restart World of Warcraft or type `/reload` in-game
 4. Configure settings with `/crosshairsplus` or `/chp`
-
-## Usage
-
-### Slash Commands
-- `/crosshairsplus` or `/chp` - Open settings panel
-- `/chp debug` - Toggle debug mode
-- `/chp test` - Run diagnostics
-- `/chp show` - Force show crosshair at screen center (testing)
-- `/chp hide` - Hide crosshair
-- `/chp rotate` - Display rotation diagnostics
 
 ### Settings Location
 **ESC → Interface → AddOns → CrosshairsPlus**

@@ -85,7 +85,7 @@
                 </Texture>
 
                 <!-- Arrow - Top -->
-                <Texture parentKey="ArrowTop" file="Interface\AddOns\CrosshairsPlus\Assets\ArrowElv0" alphaMode="ADD">
+                <Texture parentKey="ArrowTop" file="Interface\AddOns\CrosshairsPlus\Assets\Arrow0" alphaMode="ADD">
                     <Color r="1" g="1" b="1" a="1"/>
                     <Size>
                         <AbsDimension x="32" y="32"/>
@@ -97,7 +97,7 @@
                 </Texture>
 
                 <!-- Arrow - Right -->
-                <Texture parentKey="ArrowRight" file="Interface\AddOns\CrosshairsPlus\Assets\ArrowElv0" alphaMode="ADD">
+                <Texture parentKey="ArrowRight" file="Interface\AddOns\CrosshairsPlus\Assets\Arrow0" alphaMode="ADD">
                     <Color r="1" g="1" b="1" a="1"/>
                     <Size>
                         <AbsDimension x="32" y="32"/>
@@ -109,7 +109,7 @@
                 </Texture>
 
                 <!-- Arrow - Bottom -->
-                <Texture parentKey="ArrowBottom" file="Interface\AddOns\CrosshairsPlus\Assets\ArrowElv0" alphaMode="ADD">
+                <Texture parentKey="ArrowBottom" file="Interface\AddOns\CrosshairsPlus\Assets\Arrow0" alphaMode="ADD">
                     <Color r="1" g="1" b="1" a="1"/>
                     <Size>
                         <AbsDimension x="32" y="32"/>
@@ -121,7 +121,7 @@
                 </Texture>
 
                 <!-- Arrow - Left -->
-                <Texture parentKey="ArrowLeft" file="Interface\AddOns\CrosshairsPlus\Assets\ArrowElv0" alphaMode="ADD">
+                <Texture parentKey="ArrowLeft" file="Interface\AddOns\CrosshairsPlus\Assets\Arrow0" alphaMode="ADD">
                     <Color r="1" g="1" b="1" a="1"/>
                     <Size>
                         <AbsDimension x="32" y="32"/>
