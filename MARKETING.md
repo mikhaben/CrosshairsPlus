@@ -12,7 +12,7 @@ This file contains marketing materials for CurseForge publication.
 
 ## Short Description (Summary)
 
-Enhanced crosshair addon with customizable target filtering, 73+ arrow styles, and class-based coloring for improved targeting in PvP and PvE.
+Customizable crosshair overlay for your target's nameplate.Customizable target filtering, 72 arrow styles, and class-based coloring for improved targeting in PvP and PvE.
 
 ---
 
