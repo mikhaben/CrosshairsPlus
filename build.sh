@@ -7,10 +7,12 @@ set -e
 
 PROJECT_NAME="CrosshairsPlus"
 BUILD_DIR="build"
-VERSION=$(grep "## Version:" CrosshairsPlus.toc | cut -d' ' -f3)
+VERSION=$(grep "## Version:" CrosshairsPlus.toc | sed 's/.*Version: *//' | tr -d '\r\n\t ?')
+TIMESTAMP=$(date -u +"%Y-%m-%d")
 
 echo "======================================"
 echo "Building ${PROJECT_NAME} v${VERSION}"
+echo "Build date: ${TIMESTAMP}"
 echo "======================================"
 
 # Create build directory
@@ -34,10 +36,11 @@ echo "Copying assets..."
 mkdir -p "${BUILD_DIR}/${PROJECT_NAME}/Assets"
 find Assets -type f \( -name "*.tga" -o -name "*.blp" \) -exec cp {} "${BUILD_DIR}/${PROJECT_NAME}/Assets/" \;
 
-# Create ZIP file
+# Create ZIP file with timestamp
 echo "Creating ZIP package..."
 cd "${BUILD_DIR}"
-zip -r "${PROJECT_NAME}-${VERSION}.zip" "${PROJECT_NAME}/" -q
+ZIP_NAME="${PROJECT_NAME}_${VERSION}_${TIMESTAMP}.zip"
+zip -r "${ZIP_NAME}" "${PROJECT_NAME}/" -q
 cd ..
 
 # Clean up temporary folder
@@ -49,11 +52,11 @@ echo ""
 echo "======================================"
 echo "Build complete!"
 echo "======================================"
-echo "Package: ${BUILD_DIR}/${PROJECT_NAME}-${VERSION}.zip"
-echo "Size: $(du -h "${BUILD_DIR}/${PROJECT_NAME}-${VERSION}.zip" | cut -f1)"
+echo "Package: ${BUILD_DIR}/${ZIP_NAME}"
+echo "Size: $(du -h "${BUILD_DIR}/${ZIP_NAME}" | cut -f1)"
 echo ""
 echo "Contents:"
-unzip -l "${BUILD_DIR}/${PROJECT_NAME}-${VERSION}.zip" | head -20
+unzip -l "${BUILD_DIR}/${ZIP_NAME}" | head -20
 echo ""
 echo "Ready to upload to CurseForge!"
 echo "======================================"
