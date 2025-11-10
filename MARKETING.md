@@ -117,7 +117,7 @@ A: Currently colors are automatic based on class/reaction. Custom color picker i
 
 ### Version 1.0.0 - Initial Release
 First public release of CrosshairsPlus!
-- 73+ customizable arrow texture styles
+- 72 customizable arrow texture styles
 - Class-based automatic coloring
 - Target filtering (enemy players, friendly players, hostile NPCs, friendly NPCs)
 - Rotating arrow animations with speed control
