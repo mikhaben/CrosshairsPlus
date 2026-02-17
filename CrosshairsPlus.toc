@@ -3,6 +3,7 @@
 ## Notes: Enhanced crosshair addon with customizable target filtering and visual styles
 ## Author: asp1d
 ## Version: 1.0.2
+## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\logo
 ## SavedVariables: CrosshairsPlusDB
 
 # Core files
