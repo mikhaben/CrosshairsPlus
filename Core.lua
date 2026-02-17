@@ -9,17 +9,18 @@ local AddonName, CPlusNS = ...
 _G.CrosshairsPlus = CPlusNS
 
 -- Version info
-CPlusNS.Version = "1.0.0"
+CPlusNS.Version = "1.0.2"
 
 -- Default settings
 local defaults = {
-    version = "1.0.0",
+    version = "1.0.2",
 
     -- Target filters
     showEnemyPlayers = true,
     showFriendlyPlayers = false,
     showHostileNPCs = true,
     showFriendlyNPCs = false,
+    enableActionTargeting = false,
 
     -- Visual options
     enableClassColors = true,
@@ -175,7 +176,12 @@ SlashCmdList["CROSSHAIRSPLUS"] = function(msg)
         print("Frame visible: " .. tostring(CrosshairsPlusFrame and CrosshairsPlusFrame:IsShown()))
         print("Has target: " .. tostring(UnitExists("target")))
         print("Target nameplate: " .. tostring(C_NamePlate.GetNamePlateForUnit("target") ~= nil))
-        print("ShouldShow: " .. tostring(CPlusNS.ShouldShowCrosshair and CPlusNS.ShouldShowCrosshair("target")))
+        print("ShouldShow (target): " .. tostring(CPlusNS.ShouldShowCrosshair and CPlusNS.ShouldShowCrosshair("target")))
+        print("Action Targeting enabled: " .. tostring(CPlusNS.db.enableActionTargeting))
+        print("Has soft enemy: " .. tostring(UnitExists("softenemy")))
+        if CPlusNS.db.enableActionTargeting then
+            print("ShouldShow (softenemy): " .. tostring(CPlusNS.ShouldShowCrosshair and CPlusNS.ShouldShowCrosshair("softenemy")))
+        end
 
         if CrosshairsPlusFrame then
             print("Frame parent: " .. tostring(CrosshairsPlusFrame:GetParent():GetName()))
@@ -198,28 +204,12 @@ SlashCmdList["CROSSHAIRSPLUS"] = function(msg)
             CrosshairsPlusFrame:Hide()
             print("|cff00ff00CrosshairsPlus|r: Crosshair hidden")
         end
-    elseif msg == "rotate" then
-        -- Check rotation status
-        print("|cff00ff00CrosshairsPlus|r: Rotation diagnostics...")
-        print("arrowsRotate: " .. tostring(CPlusNS.db.arrowsRotate))
-        print("arrowRotationSpeed: " .. tostring(CPlusNS.db.arrowRotationSpeed))
-        print("Frame exists: " .. tostring(CrosshairsPlusFrame ~= nil))
-        if CrosshairsPlusFrame then
-            print("ArrowTop exists: " .. tostring(CrosshairsPlusFrame.ArrowTop ~= nil))
-            print("ArrowRight exists: " .. tostring(CrosshairsPlusFrame.ArrowRight ~= nil))
-            print("ArrowBottom exists: " .. tostring(CrosshairsPlusFrame.ArrowBottom ~= nil))
-            print("ArrowLeft exists: " .. tostring(CrosshairsPlusFrame.ArrowLeft ~= nil))
-        end
     else
         -- Open settings panel
         if CPlusNS.OpenSettings then
             CPlusNS.OpenSettings()
         elseif Settings and Settings.OpenToCategory then
             Settings.OpenToCategory("CrosshairsPlus")
-        elseif InterfaceOptionsFrame_OpenToCategory then
-            -- Fallback for older API
-            InterfaceOptionsFrame_OpenToCategory("CrosshairsPlus")
-            InterfaceOptionsFrame_OpenToCategory("CrosshairsPlus") -- Call twice (WoW quirk)
         else
             print("|cffff0000CrosshairsPlus|r: Could not open settings panel")
         end

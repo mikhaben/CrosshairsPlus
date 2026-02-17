@@ -6,30 +6,117 @@
 local AddonName, CPlusNS = ...
 
 -- Settings frames
-local mainSettingsFrame = nil
-local circleSettingsFrame = nil
-local lineSettingsFrame = nil
-local arrowSettingsFrame = nil
+local mainSettingsFrame
+local circleSettingsFrame
+local lineSettingsFrame
+local arrowSettingsFrame
+
+-- ============================================================
+-- Shared UI Helpers
+-- All helpers take (parent, yOffset, ...) and return (widget, newYOffset)
+-- ============================================================
+
+local function CreateHeader(parent, yOffset, text)
+    local header = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    header:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
+    header:SetText(text)
+    header:SetTextColor(1, 0.82, 0)
+    return header, yOffset - 30
+end
+
+local function CreateCheckbox(parent, yOffset, text, tooltip, dbKey)
+    local checkbox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+    checkbox:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
+    checkbox.Text:SetFontObject("GameFontNormal")
+    checkbox.Text:SetText(text)
+    checkbox.tooltipText = tooltip
+    checkbox:SetChecked(CPlusNS.db[dbKey])
+    checkbox:SetScript("OnClick", function(self)
+        CPlusNS.db[dbKey] = self:GetChecked()
+        CPlusNS.UpdateCrosshairVisuals()
+    end)
+    return checkbox, yOffset - 30
+end
+
+local function CreateSlider(parent, yOffset, text, tooltip, min, max, step, dbKey)
+    local slider = CreateFrame("Slider", nil, parent, "MinimalSliderTemplate")
+    slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
+    slider:SetWidth(400)
+    slider:SetMinMaxValues(min, max)
+    slider:SetValueStep(step)
+    slider:SetValue(CPlusNS.db[dbKey])
+    slider:SetObeyStepOnDrag(true)
+
+    slider.Text = slider:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    slider.Text:SetPoint("TOP", slider, "TOP", 0, 16)
+    slider.Low = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    slider.Low:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 0)
+    slider.High = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    slider.High:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 0)
+
+    slider.Text:SetText(text)
+    slider.Low:SetText(tostring(min))
+    slider.High:SetText(tostring(max))
+
+    local valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    valueText:SetPoint("TOP", slider, "BOTTOM", 0, 0)
+    valueText:SetText(tostring(CPlusNS.db[dbKey]))
+
+    slider:SetScript("OnValueChanged", function(self, value)
+        value = CPlusNS.Round(value, 1)
+        CPlusNS.db[dbKey] = value
+        valueText:SetText(tostring(value))
+        CPlusNS.UpdateCrosshairVisuals()
+    end)
+
+    slider.tooltipText = tooltip
+    return slider, yOffset - 50
+end
+
+local function CreateDropdown(parent, yOffset, text, options, dbKey)
+    local label = parent:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    label:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
+    label:SetText(text)
+
+    yOffset = yOffset - 20
+
+    local dropdown = CreateFrame("DropdownButton", nil, parent, "WowStyle1DropdownTemplate")
+    dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
+    dropdown:SetWidth(220)
+
+    dropdown:SetupMenu(function(_, rootDescription)
+        for key, displayText in pairs(options) do
+            rootDescription:CreateRadio(displayText,
+                function() return CPlusNS.db[dbKey] == key end,
+                function()
+                    CPlusNS.db[dbKey] = key
+                    CPlusNS.UpdateCrosshairVisuals()
+                end)
+        end
+    end)
+
+    return dropdown, yOffset - 40
+end
+
+-- ============================================================
+-- Panel Constructors
+-- ============================================================
 
 -- Create main settings panel (General)
 local function CreateMainSettingsPanel()
-    -- Main settings frame
     local frame = CreateFrame("Frame", "CrosshairsPlusSettingsFrame", UIParent)
     frame:Hide()
     frame:SetSize(600, 700)
 
-    -- Title
     local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("CrosshairsPlus - General Settings")
 
-    -- Version text
     local version = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     version:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     version:SetText("Version " .. CPlusNS.Version)
     version:SetTextColor(0.5, 0.5, 0.5)
 
-    -- Scroll frame for settings content
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -16)
     scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -26, 16)
@@ -38,69 +125,44 @@ local function CreateMainSettingsPanel()
     content:SetSize(550, 600)
     scrollFrame:SetScrollChild(content)
 
-    -- Current Y offset for placing elements
     local yOffset = -10
 
-    -- Helper function to create a checkbox
-    local function CreateCheckbox(parent, text, tooltip, dbKey)
-        local checkbox = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
-        checkbox:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
-        checkbox.Text:SetText(text)
-        checkbox.tooltipText = tooltip
-
-        checkbox:SetChecked(CPlusNS.db[dbKey])
-
-        checkbox:SetScript("OnClick", function(self)
-            CPlusNS.db[dbKey] = self:GetChecked()
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        yOffset = yOffset - 30
-
-        return checkbox
-    end
-
-    -- Helper function to create a section header
-    local function CreateHeader(parent, text)
-        local header = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        header:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
-        header:SetText(text)
-        header:SetTextColor(1, 0.82, 0)
-
-        yOffset = yOffset - 30
-
-        return header
-    end
-
     -- TARGET FILTERS SECTION
-    CreateHeader(content, "Target Filters")
+    _, yOffset = CreateHeader(content, yOffset, "Target Filters")
 
-    CreateCheckbox(content,
+    _, yOffset = CreateCheckbox(content, yOffset,
         "Show on Enemy Players",
         "Display crosshair on enemy players in PvP",
         "showEnemyPlayers")
 
-    CreateCheckbox(content,
+    _, yOffset = CreateCheckbox(content, yOffset,
         "Show on Friendly Players",
         "Display crosshair on friendly players",
         "showFriendlyPlayers")
 
-    CreateCheckbox(content,
+    _, yOffset = CreateCheckbox(content, yOffset,
         "Show on Hostile NPCs",
         "Display crosshair on hostile creatures and NPCs",
         "showHostileNPCs")
 
-    CreateCheckbox(content,
+    _, yOffset = CreateCheckbox(content, yOffset,
         "Show on Friendly NPCs",
         "Display crosshair on friendly creatures and NPCs",
         "showFriendlyNPCs")
 
     yOffset = yOffset - 10
 
-    -- VISUAL OPTIONS SECTION
-    CreateHeader(content, "Visual Options")
+    _, yOffset = CreateCheckbox(content, yOffset,
+        "Enable Action Targeting",
+        "Show crosshair on soft enemy targets (requires WoW's Action Targeting enabled). Hard target always takes priority.",
+        "enableActionTargeting")
 
-    CreateCheckbox(content,
+    yOffset = yOffset - 10
+
+    -- VISUAL OPTIONS SECTION
+    _, yOffset = CreateHeader(content, yOffset, "Visual Options")
+
+    _, yOffset = CreateCheckbox(content, yOffset,
         "Enable Class Coloring",
         "Color player targets based on their class",
         "enableClassColors")
@@ -112,44 +174,24 @@ local function CreateMainSettingsPanel()
     resetButton:SetPoint("TOPLEFT", content, "TOPLEFT", 16, yOffset)
     resetButton:SetSize(150, 25)
     resetButton:SetText("Reset to Defaults")
-    resetButton:SetScript("OnClick", function()
-        -- Confirm dialog
-        StaticPopupDialogs["CROSSHAIRSPLUS_RESET_CONFIRM"] = {
-            text = "Reset all CrosshairsPlus settings to defaults?",
-            button1 = "Yes",
-            button2 = "No",
-            OnAccept = function()
-                -- Reset to defaults
-                CPlusNS.db.showEnemyPlayers = true
-                CPlusNS.db.showFriendlyPlayers = false
-                CPlusNS.db.showHostileNPCs = true
-                CPlusNS.db.showFriendlyNPCs = false
-                CPlusNS.db.enableClassColors = true
-                CPlusNS.db.showLines = true
-                CPlusNS.db.arrowStyle = "arrow0"
-                CPlusNS.db.circleStyle = "default"
-                CPlusNS.db.lineThickness = 2
-                CPlusNS.db.lineStartGap = 0
-                CPlusNS.db.crosshairScale = 0.8
-                CPlusNS.db.crosshairAlpha = 0.6
-                CPlusNS.db.arrowDistance = 74
-                CPlusNS.db.arrowSize = 24
-                CPlusNS.db.arrowsRotate = true
-                CPlusNS.db.arrowsRotateCounterClockwise = false
-                CPlusNS.db.arrowRotationSpeed = 5.0
+    StaticPopupDialogs["CROSSHAIRSPLUS_RESET_CONFIRM"] = {
+        text = "Reset all CrosshairsPlus settings to defaults?",
+        button1 = "Yes",
+        button2 = "No",
+        OnAccept = function()
+            CrosshairsPlusDB = nil
+            ReloadUI()
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3,
+    }
 
-                -- Reload UI to refresh settings panel
-                ReloadUI()
-            end,
-            timeout = 0,
-            whileDead = true,
-            hideOnEscape = true,
-            preferredIndex = 3,
-        }
+    resetButton:SetScript("OnClick", function()
         StaticPopup_Show("CROSSHAIRSPLUS_RESET_CONFIRM")
     end)
 
-    -- Info text at bottom
     yOffset = yOffset - 40
     local infoText = content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     infoText:SetPoint("TOPLEFT", content, "TOPLEFT", 16, yOffset)
@@ -157,6 +199,24 @@ local function CreateMainSettingsPanel()
     infoText:SetJustifyH("LEFT")
     infoText:SetText("Additional settings can be found in the submenus: Circle Options, Crosshair Lines, and Arrow Settings.")
     infoText:SetTextColor(0.7, 0.7, 0.7)
+
+    yOffset = yOffset - 30
+
+    _, yOffset = CreateHeader(content, yOffset, "Slash Commands")
+
+    local commandsText = content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+    commandsText:SetPoint("TOPLEFT", content, "TOPLEFT", 16, yOffset)
+    commandsText:SetWidth(520)
+    commandsText:SetJustifyH("LEFT")
+    commandsText:SetSpacing(4)
+    commandsText:SetText(
+        "/chp - Open settings panel\n" ..
+        "/chp debug - Toggle debug mode\n" ..
+        "/chp test - Run diagnostics\n" ..
+        "/chp show - Force show crosshair at screen center\n" ..
+        "/chp hide - Hide crosshair"
+    )
+    commandsText:SetTextColor(0.7, 0.7, 0.7)
 
     return frame
 end
@@ -167,18 +227,15 @@ local function CreateCircleSettingsPanel()
     frame:Hide()
     frame:SetSize(600, 700)
 
-    -- Title
     local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("Circle Options")
 
-    -- Subtitle
     local subtitle = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subtitle:SetText("Configure the center circle appearance")
     subtitle:SetTextColor(0.5, 0.5, 0.5)
 
-    -- Scroll frame for settings content
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
     scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -26, 16)
@@ -189,92 +246,23 @@ local function CreateCircleSettingsPanel()
 
     local yOffset = -20
 
-    -- Helper function to create a dropdown
-    local function CreateDropdown(parent, text, tooltip, options, dbKey)
-        local dropdown = CreateFrame("Frame", nil, parent, "UIDropDownMenuTemplate")
-        dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
-
-        -- Label
-        local label = parent:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        label:SetPoint("BOTTOMLEFT", dropdown, "TOPLEFT", 16, 3)
-        label:SetText(text)
-
-        -- Initialize dropdown
-        UIDropDownMenu_SetWidth(dropdown, 200)
-        UIDropDownMenu_SetText(dropdown, options[CPlusNS.db[dbKey]] or options[1])
-
-        UIDropDownMenu_Initialize(dropdown, function(self, level)
-            for key, displayText in pairs(options) do
-                local info = UIDropDownMenu_CreateInfo()
-                info.text = displayText
-                info.value = key
-                info.func = function()
-                    CPlusNS.db[dbKey] = key
-                    UIDropDownMenu_SetText(dropdown, displayText)
-                    CPlusNS.UpdateCrosshairVisuals()
-                end
-                info.checked = (CPlusNS.db[dbKey] == key)
-                UIDropDownMenu_AddButton(info)
-            end
-        end)
-
-        dropdown.tooltipText = tooltip
-
-        yOffset = yOffset - 50
-
-        return dropdown
-    end
-
-    -- Helper function to create a slider
-    local function CreateSlider(parent, text, tooltip, min, max, step, dbKey)
-        local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
-        slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
-        slider:SetWidth(400)
-        slider:SetMinMaxValues(min, max)
-        slider:SetValueStep(step)
-        slider:SetValue(CPlusNS.db[dbKey])
-        slider:SetObeyStepOnDrag(true)
-
-        -- Slider texts
-        slider.Text:SetText(text)
-        slider.Low:SetText(tostring(min))
-        slider.High:SetText(tostring(max))
-
-        -- Value display
-        local valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        valueText:SetPoint("TOP", slider, "BOTTOM", 0, 0)
-        valueText:SetText(tostring(CPlusNS.db[dbKey]))
-
-        slider:SetScript("OnValueChanged", function(self, value)
-            value = CPlusNS.Round(value, 1)
-            CPlusNS.db[dbKey] = value
-            valueText:SetText(tostring(value))
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        slider.tooltipText = tooltip
-
-        yOffset = yOffset - 50
-
-        return slider
-    end
-
-    CreateDropdown(content,
+    _, yOffset = CreateDropdown(content, yOffset,
         "Circle Style",
-        "Choose the circle/core texture style",
         {
             ["default"] = "Default Circle",
             ["minimal"] = "Minimal Circle"
         },
         "circleStyle")
 
-    CreateSlider(content,
+    yOffset = yOffset - 10
+
+    _, yOffset = CreateSlider(content, yOffset,
         "Frame Scale",
         "Adjust the overall size of the crosshair (0.5-2.0x)",
         0.5, 2.0, 0.1,
         "crosshairScale")
 
-    CreateSlider(content,
+    _, yOffset = CreateSlider(content, yOffset,
         "Frame Opacity",
         "Adjust the transparency of the crosshair (0.0-1.0)",
         0.0, 1.0, 0.1,
@@ -289,18 +277,15 @@ local function CreateLineSettingsPanel()
     frame:Hide()
     frame:SetSize(600, 700)
 
-    -- Title
     local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("Crosshair Lines")
 
-    -- Subtitle
     local subtitle = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subtitle:SetText("Configure directional crosshair lines")
     subtitle:SetTextColor(0.5, 0.5, 0.5)
 
-    -- Scroll frame for settings content
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
     scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -26, 16)
@@ -311,71 +296,23 @@ local function CreateLineSettingsPanel()
 
     local yOffset = -10
 
-    -- Helper function to create a checkbox
-    local function CreateCheckbox(parent, text, tooltip, dbKey)
-        local checkbox = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
-        checkbox:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
-        checkbox.Text:SetText(text)
-        checkbox.tooltipText = tooltip
-
-        checkbox:SetChecked(CPlusNS.db[dbKey])
-
-        checkbox:SetScript("OnClick", function(self)
-            CPlusNS.db[dbKey] = self:GetChecked()
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        yOffset = yOffset - 30
-
-        return checkbox
-    end
-
-    -- Helper function to create a slider
-    local function CreateSlider(parent, text, tooltip, min, max, step, dbKey)
-        local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
-        slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
-        slider:SetWidth(400)
-        slider:SetMinMaxValues(min, max)
-        slider:SetValueStep(step)
-        slider:SetValue(CPlusNS.db[dbKey])
-        slider:SetObeyStepOnDrag(true)
-
-        -- Slider texts
-        slider.Text:SetText(text)
-        slider.Low:SetText(tostring(min))
-        slider.High:SetText(tostring(max))
-
-        -- Value display
-        local valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        valueText:SetPoint("TOP", slider, "BOTTOM", 0, 0)
-        valueText:SetText(tostring(CPlusNS.db[dbKey]))
-
-        slider:SetScript("OnValueChanged", function(self, value)
-            value = CPlusNS.Round(value, 1)
-            CPlusNS.db[dbKey] = value
-            valueText:SetText(tostring(value))
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        slider.tooltipText = tooltip
-
-        yOffset = yOffset - 50
-
-        return slider
-    end
-
-    local showLinesCheckbox = CreateCheckbox(content,
+    local showLinesCheckbox
+    showLinesCheckbox, yOffset = CreateCheckbox(content, yOffset,
         "Show Crosshair Lines",
         "Display directional lines extending from crosshair",
         "showLines")
 
-    local gapSlider = CreateSlider(content,
+    yOffset = yOffset - 10
+
+    local gapSlider
+    gapSlider, yOffset = CreateSlider(content, yOffset,
         "Line Start Position",
         "Adjust where lines start: negative values go toward center, positive values go outward from edge",
         -48, 100, 2,
         "lineStartGap")
 
-    local thicknessSlider = CreateSlider(content,
+    local thicknessSlider
+    thicknessSlider, yOffset = CreateSlider(content, yOffset,
         "Line Thickness",
         "Adjust the thickness of crosshair lines (1-10 pixels)",
         1, 10, 1,
@@ -415,18 +352,15 @@ local function CreateArrowSettingsPanel()
     frame:Hide()
     frame:SetSize(600, 700)
 
-    -- Title
     local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("Arrow Settings")
 
-    -- Subtitle
     local subtitle = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subtitle:SetText("Configure arrow style and rotation behavior")
     subtitle:SetTextColor(0.5, 0.5, 0.5)
 
-    -- Scroll frame for settings content
     local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
     scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -26, 16)
@@ -437,73 +371,8 @@ local function CreateArrowSettingsPanel()
 
     local yOffset = -10
 
-    -- Helper function to create a checkbox
-    local function CreateCheckbox(parent, text, tooltip, dbKey)
-        local checkbox = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
-        checkbox:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
-        checkbox.Text:SetText(text)
-        checkbox.tooltipText = tooltip
-
-        checkbox:SetChecked(CPlusNS.db[dbKey])
-
-        checkbox:SetScript("OnClick", function(self)
-            CPlusNS.db[dbKey] = self:GetChecked()
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        yOffset = yOffset - 30
-
-        return checkbox
-    end
-
-    -- Helper function to create a section header
-    local function CreateHeader(parent, text)
-        local header = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        header:SetPoint("TOPLEFT", parent, "TOPLEFT", 8, yOffset)
-        header:SetText(text)
-        header:SetTextColor(1, 0.82, 0)
-
-        yOffset = yOffset - 30
-
-        return header
-    end
-
-    -- Helper function to create a slider
-    local function CreateSlider(parent, text, tooltip, min, max, step, dbKey)
-        local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
-        slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
-        slider:SetWidth(400)
-        slider:SetMinMaxValues(min, max)
-        slider:SetValueStep(step)
-        slider:SetValue(CPlusNS.db[dbKey])
-        slider:SetObeyStepOnDrag(true)
-
-        -- Slider texts
-        slider.Text:SetText(text)
-        slider.Low:SetText(tostring(min))
-        slider.High:SetText(tostring(max))
-
-        -- Value display
-        local valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        valueText:SetPoint("TOP", slider, "BOTTOM", 0, 0)
-        valueText:SetText(tostring(CPlusNS.db[dbKey]))
-
-        slider:SetScript("OnValueChanged", function(self, value)
-            value = CPlusNS.Round(value, 1)
-            CPlusNS.db[dbKey] = value
-            valueText:SetText(tostring(value))
-            CPlusNS.UpdateCrosshairVisuals()
-        end)
-
-        slider.tooltipText = tooltip
-
-        yOffset = yOffset - 50
-
-        return slider
-    end
-
     -- ARROW STYLE SECTION
-    CreateHeader(content, "Arrow Style")
+    _, yOffset = CreateHeader(content, yOffset, "Arrow Style")
 
     local arrowHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     arrowHeader:SetPoint("TOPLEFT", content, "TOPLEFT", 8, yOffset)
@@ -515,10 +384,8 @@ local function CreateArrowSettingsPanel()
     local iconSize = 32
     local buttonSpacing = 5
     local buttonWidth = iconSize + 30  -- icon + checkbox + spacing
-    local buttonsPerRow = 6
     local rowHeight = iconSize + 10
     local xPos = 8
-    local startYOffset = yOffset
 
     -- Add "None" option first
     local noneContainer = CreateFrame("Frame", nil, content)
@@ -587,15 +454,17 @@ local function CreateArrowSettingsPanel()
     yOffset = yOffset - rowHeight - 20
 
     -- ARROW POSITIONING SECTION
-    CreateHeader(content, "Arrow Positioning")
+    _, yOffset = CreateHeader(content, yOffset, "Arrow Positioning")
 
-    local distanceSlider = CreateSlider(content,
+    local distanceSlider
+    distanceSlider, yOffset = CreateSlider(content, yOffset,
         "Distance from Center",
         "Adjust how far arrows are from the center circle (20-100 pixels)",
         20, 100, 2,
         "arrowDistance")
 
-    local sizeSlider = CreateSlider(content,
+    local sizeSlider
+    sizeSlider, yOffset = CreateSlider(content, yOffset,
         "Arrow Size",
         "Adjust the size of the arrows (16-64 pixels)",
         16, 64, 2,
@@ -604,19 +473,24 @@ local function CreateArrowSettingsPanel()
     yOffset = yOffset - 10
 
     -- ARROW ROTATION SECTION
-    CreateHeader(content, "Arrow Rotation")
+    _, yOffset = CreateHeader(content, yOffset, "Arrow Rotation")
 
-    local rotateCheckbox = CreateCheckbox(content,
+    local rotateCheckbox
+    rotateCheckbox, yOffset = CreateCheckbox(content, yOffset,
         "Rotate Arrows",
         "Enable continuous rotation of arrows around the circle",
         "arrowsRotate")
 
-    local clockwiseCheckbox = CreateCheckbox(content,
+    local clockwiseCheckbox
+    clockwiseCheckbox, yOffset = CreateCheckbox(content, yOffset,
         "Rotate Counter-Clockwise",
         "If enabled, arrows rotate counter-clockwise; otherwise clockwise (default)",
         "arrowsRotateCounterClockwise")
 
-    local rotationSlider = CreateSlider(content,
+    yOffset = yOffset - 10
+
+    local rotationSlider
+    rotationSlider, yOffset = CreateSlider(content, yOffset,
         "Rotation Speed",
         "Adjust the speed of arrow rotation (1.0-10.0x)",
         1.0, 10.0, 0.5,
@@ -682,7 +556,10 @@ local function CreateArrowSettingsPanel()
     return frame
 end
 
--- Initialize settings panel
+-- ============================================================
+-- Settings Registration
+-- ============================================================
+
 function CPlusNS.InitializeSettings()
     if CPlusNS.db and CPlusNS.db.debugMode then
         print("|cff00ff00CrosshairsPlus|r: InitializeSettings called")
@@ -705,7 +582,7 @@ function CPlusNS.InitializeSettings()
         print("|cff00ff00CrosshairsPlus|r: Settings frames created")
     end
 
-    -- Register with modern Settings API (Retail 10.0+)
+    -- Register with Settings API (12.0+)
     if Settings and Settings.RegisterCanvasLayoutCategory then
         local success2, err2 = pcall(function()
             -- Register main category
@@ -714,90 +591,22 @@ function CPlusNS.InitializeSettings()
             Settings.RegisterAddOnCategory(mainCategory)
             CPlusNS.SettingsCategory = mainCategory
 
-            -- Try using RegisterCanvasLayoutSubcategory for subcategories
-            if Settings.RegisterCanvasLayoutSubcategory then
-                -- General subcategory
-                local generalCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, mainSettingsFrame, "General")
-                CPlusNS.GeneralSettingsCategory = generalCategory
-
-                -- Circle settings subcategory
-                local circleCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, circleSettingsFrame, "Circle Options")
-                CPlusNS.CircleSettingsCategory = circleCategory
-
-                -- Line settings subcategory
-                local lineCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, lineSettingsFrame, "Crosshair Lines")
-                CPlusNS.LineSettingsCategory = lineCategory
-
-                -- Arrow settings subcategory
-                local arrowCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, arrowSettingsFrame, "Arrow Settings")
-                CPlusNS.ArrowSettingsCategory = arrowCategory
-            else
-                -- Fallback: register as separate categories with parent names
-                local generalCategory = Settings.RegisterCanvasLayoutCategory(mainSettingsFrame, "General")
-                generalCategory:SetName("General")
-                generalCategory.parentCategoryID = mainCategory:GetID()
-
-                local circleCategory = Settings.RegisterCanvasLayoutCategory(circleSettingsFrame, "Circle Options")
-                circleCategory:SetName("Circle Options")
-                circleCategory.parentCategoryID = mainCategory:GetID()
-
-                local lineCategory = Settings.RegisterCanvasLayoutCategory(lineSettingsFrame, "Crosshair Lines")
-                lineCategory:SetName("Crosshair Lines")
-                lineCategory.parentCategoryID = mainCategory:GetID()
-
-                local arrowCategory = Settings.RegisterCanvasLayoutCategory(arrowSettingsFrame, "Arrow Settings")
-                arrowCategory:SetName("Arrow Settings")
-                arrowCategory.parentCategoryID = mainCategory:GetID()
-
-                CPlusNS.GeneralSettingsCategory = generalCategory
-                CPlusNS.CircleSettingsCategory = circleCategory
-                CPlusNS.LineSettingsCategory = lineCategory
-                CPlusNS.ArrowSettingsCategory = arrowCategory
-            end
+            -- Register subcategories
+            CPlusNS.GeneralSettingsCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, mainSettingsFrame, "General")
+            CPlusNS.CircleSettingsCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, circleSettingsFrame, "Circle Options")
+            CPlusNS.LineSettingsCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, lineSettingsFrame, "Crosshair Lines")
+            CPlusNS.ArrowSettingsCategory = Settings.RegisterCanvasLayoutSubcategory(mainCategory, arrowSettingsFrame, "Arrow Settings")
         end)
 
         if success2 then
             if CPlusNS.db and CPlusNS.db.debugMode then
-                print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (modern API)")
+                print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus")
             end
         else
             print("|cffff0000CrosshairsPlus|r: Error registering settings: " .. tostring(err2))
         end
-    elseif InterfaceOptions_AddCategory then
-        -- Fallback for older API (pre-10.0)
-        mainSettingsFrame.name = "CrosshairsPlus"
-        mainSettingsFrame.okay = function() end
-        mainSettingsFrame.cancel = function() end
-        mainSettingsFrame.default = function() end
-
-        circleSettingsFrame.name = "Circle Options"
-        circleSettingsFrame.parent = "CrosshairsPlus"
-        circleSettingsFrame.okay = function() end
-        circleSettingsFrame.cancel = function() end
-        circleSettingsFrame.default = function() end
-
-        lineSettingsFrame.name = "Crosshair Lines"
-        lineSettingsFrame.parent = "CrosshairsPlus"
-        lineSettingsFrame.okay = function() end
-        lineSettingsFrame.cancel = function() end
-        lineSettingsFrame.default = function() end
-
-        arrowSettingsFrame.name = "Arrow Settings"
-        arrowSettingsFrame.parent = "CrosshairsPlus"
-        arrowSettingsFrame.okay = function() end
-        arrowSettingsFrame.cancel = function() end
-        arrowSettingsFrame.default = function() end
-
-        InterfaceOptions_AddCategory(mainSettingsFrame)
-        InterfaceOptions_AddCategory(circleSettingsFrame)
-        InterfaceOptions_AddCategory(lineSettingsFrame)
-        InterfaceOptions_AddCategory(arrowSettingsFrame)
-
-        if CPlusNS.db and CPlusNS.db.debugMode then
-            print("|cff00ff00CrosshairsPlus|r: Settings panel registered with submenus (legacy API)")
-        end
     else
-        print("|cffff0000CrosshairsPlus|r: Warning - Could not register settings panel (Settings=" .. tostring(Settings) .. ", InterfaceOptions_AddCategory=" .. tostring(InterfaceOptions_AddCategory) .. ")")
+        print("|cffff0000CrosshairsPlus|r: Warning - Could not register settings panel (Settings=" .. tostring(Settings) .. ")")
     end
 end
 
@@ -805,8 +614,5 @@ end
 function CPlusNS.OpenSettings()
     if Settings and Settings.OpenToCategory and CPlusNS.SettingsCategory then
         Settings.OpenToCategory(CPlusNS.SettingsCategory:GetID())
-    elseif InterfaceOptionsFrame_OpenToCategory then
-        InterfaceOptionsFrame_OpenToCategory(mainSettingsFrame)
-        InterfaceOptionsFrame_OpenToCategory(mainSettingsFrame) -- Call twice (WoW quirk)
     end
 end

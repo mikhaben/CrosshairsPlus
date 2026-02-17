@@ -152,12 +152,6 @@
                 </FontString>
             </Layer>
         </Layers>
-
-        <Scripts>
-            <OnLoad>
-                print("|cff00ff00CrosshairsPlus|r: Frame OnLoad executed")
-            </OnLoad>
-        </Scripts>
     </Frame>
 
 </Ui>

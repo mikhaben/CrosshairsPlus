@@ -27,6 +27,7 @@ CrosshairsPlus displays a customizable visual crosshair on your current target's
 - **73+ Arrow Styles** - Huge collection of arrow textures to match your UI
 - **Class-Based Coloring** - Automatically colors by target's class (Warriors = tan, Mages = cyan, etc.)
 - **Target Filtering** - Choose to show on enemy players, friendly players, hostile NPCs, or friendly NPCs
+- **Action Targeting Support** - Crosshair works with WoW's soft enemy targeting for seamless tab-less targeting
 - **Rotating Animations** - Optional arrow rotation with adjustable speed
 - **Fully Customizable** - Adjust size (50%-200%), opacity (0%-100%), line thickness, arrow distance
 - **Smooth Performance** - Lightweight and optimized, no lag
@@ -105,8 +106,8 @@ A: Make sure at least one target filter is enabled in the settings, and verify n
 **Q: Can I request new arrow styles?**
 A: Yes! Leave a comment with your suggestions and I'll consider adding them in future updates.
 
-**Q: Does it work on focus targets?**
-A: Currently CrosshairsPlus only works on your current target. Focus target support is planned for a future update.
+**Q: Does it work on focus targets or soft targets?**
+A: CrosshairsPlus works on your current hard target. It also supports WoW's Action Targeting for soft enemy targets when enabled and when there's no hard target. Focus target support is planned for a future update.
 
 **Q: Can I change the colors manually?**
 A: Currently colors are automatic based on class/reaction. Custom color picker is planned for a future update.
@@ -115,11 +116,12 @@ A: Currently colors are automatic based on class/reaction. Custom color picker i
 
 ## Version History / Changelog Format
 
-### Version 1.0.0 - Initial Release
+### Version 1.0.2 - Initial Release
 First public release of CrosshairsPlus!
-- 72 customizable arrow texture styles
+- 73 customizable arrow texture styles
 - Class-based automatic coloring
 - Target filtering (enemy players, friendly players, hostile NPCs, friendly NPCs)
+- Action Targeting support for soft enemy targets
 - Rotating arrow animations with speed control
 - Adjustable scale (50%-200%) and opacity (0%-100%)
 - Customizable crosshair lines with thickness control

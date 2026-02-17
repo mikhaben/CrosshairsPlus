@@ -6,11 +6,12 @@
 local AddonName, CPlusNS = ...
 
 -- Local references
+local issecretvalue = issecretvalue or function() return false end
 local frame
-local currentNameplate = nil
 local updateTimer = 0
 local UPDATE_INTERVAL = 0.3 -- Update every 0.3 seconds for color/range checks (color changes are rare)
 local lastNameplateWidth = 0 -- Cache last nameplate width to avoid redundant resizing
+local activeUnit = nil -- Tracks which unit token the crosshair is following ("target", "softenemy", or nil)
 
 -- Check if target should show crosshair based on user settings
 function CPlusNS.ShouldShowCrosshair(unit)
@@ -45,6 +46,18 @@ function CPlusNS.ShouldShowCrosshair(unit)
     end
 end
 
+-- Determine which unit (if any) the crosshair should follow
+-- Hard target always takes priority over soft enemy
+local function GetActiveUnit()
+    if UnitExists("target") and CPlusNS.ShouldShowCrosshair("target") then
+        return "target"
+    end
+    if CPlusNS.db.enableActionTargeting and UnitExists("softenemy") and CPlusNS.ShouldShowCrosshair("softenemy") then
+        return "softenemy"
+    end
+    return nil
+end
+
 -- Get color for unit based on type and class
 function CPlusNS.GetUnitColor(unit)
     if not unit or not UnitExists(unit) then
@@ -61,7 +74,7 @@ function CPlusNS.GetUnitColor(unit)
     -- Player units with class coloring enabled
     if UnitIsPlayer(unit) and db.enableClassColors then
         local _, class = UnitClass(unit)
-        if class and RAID_CLASS_COLORS[class] then
+        if class and not issecretvalue(class) and RAID_CLASS_COLORS[class] then
             local color = RAID_CLASS_COLORS[class]
             return color.r, color.g, color.b
         end
@@ -70,13 +83,9 @@ function CPlusNS.GetUnitColor(unit)
     -- Friendly/Hostile coloring
     if UnitCanAttack("player", unit) or UnitIsEnemy("player", unit) then
         return 1, 0, 0 -- Red for hostile
-    elseif UnitIsFriend("player", unit) or not UnitCanAttack("player", unit) then
-        return 0, 1, 0 -- Green for friendly
     end
 
-    -- Fallback to default selection color
-    local r, g, b = UnitSelectionColor(unit)
-    return r or 1, g or 1, b or 1
+    return 0, 1, 0 -- Green for friendly/neutral
 end
 
 -- Apply color to all crosshair textures
@@ -199,16 +208,6 @@ function CPlusNS.UpdateLineVisibility()
     if frame.RightLine then frame.RightLine:SetShown(showLines) end
 end
 
--- Hide unused text elements (range and name features not implemented)
-local function HideTextElements()
-    if frame.RangeText then
-        frame.RangeText:Hide()
-    end
-    if frame.NameText then
-        frame.NameText:Hide()
-    end
-end
-
 -- Attach crosshair to nameplate
 local function AttachToNameplate(nameplate)
     if not nameplate then
@@ -216,28 +215,27 @@ local function AttachToNameplate(nameplate)
         return
     end
 
-    -- CRITICAL: Verify this nameplate actually belongs to our target
-    if not UnitExists("target") then
-        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: No target exists!") end
+    -- CRITICAL: Verify this nameplate actually belongs to our active unit
+    if not activeUnit or not UnitExists(activeUnit) then
+        if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: No active unit exists!") end
         return
     end
 
-    local targetNameplate = C_NamePlate.GetNamePlateForUnit("target")
-    if targetNameplate ~= nameplate then
+    local unitNameplate = C_NamePlate.GetNamePlateForUnit(activeUnit)
+    if unitNameplate ~= nameplate then
         if CPlusNS.db and CPlusNS.db.debugMode then
             print("AttachToNameplate: ERROR - nameplate mismatch!")
             print("  Passed nameplate: " .. tostring(nameplate))
-            print("  Target nameplate: " .. tostring(targetNameplate))
+            print("  Active unit nameplate: " .. tostring(unitNameplate))
         end
         return
     end
 
     if CPlusNS.db and CPlusNS.db.debugMode then
-        local targetName = GetUnitName("target", false) or "Unknown"
-        print("AttachToNameplate: attaching to " .. targetName .. ", wasShown=" .. tostring(frame:IsShown()))
+        local rawName = GetUnitName(activeUnit, false)
+        local targetName = (rawName and not issecretvalue(rawName)) and rawName or "Unknown"
+        print("AttachToNameplate: attaching to " .. targetName .. " (" .. activeUnit .. "), wasShown=" .. tostring(frame:IsShown()))
     end
-
-    currentNameplate = nameplate
 
     -- Always clear and reattach (like Crosshairs addon)
     frame:ClearAllPoints()
@@ -270,9 +268,6 @@ local function AttachToNameplate(nameplate)
     CPlusNS.UpdateArrowStyle()
     CPlusNS.UpdateCircleStyle()
 
-    -- Hide unused text elements
-    HideTextElements()
-
     -- Show frame (instant, no fade)
     if not frame:IsShown() then
         if CPlusNS.db and CPlusNS.db.debugMode then print("AttachToNameplate: Showing frame (was hidden)") end
@@ -283,15 +278,13 @@ local function AttachToNameplate(nameplate)
 
     -- CRITICAL: Always update color AFTER showing frame (moved here to avoid duplicate code)
     -- This ensures immediate color update on target change
-    local r, g, b = CPlusNS.GetUnitColor("target")
+    local r, g, b = CPlusNS.GetUnitColor(activeUnit)
     if CPlusNS.db and CPlusNS.db.debugMode then
-        local targetName = GetUnitName("target", false) or "Unknown"
+        local rawName = GetUnitName(activeUnit, false)
+        local targetName = (rawName and not issecretvalue(rawName)) and rawName or "Unknown"
         print(string.format("Applying color to %s: R=%.2f G=%.2f B=%.2f", targetName, r, g, b))
     end
     ApplyColorToTextures(r, g, b)
-
-    -- Restore user's alpha setting after showing
-    frame:SetAlpha(CPlusNS.db.crosshairAlpha or 1.0)
 end
 
 -- Hide crosshair
@@ -302,29 +295,22 @@ local function HideCrosshair()
         if CPlusNS.db and CPlusNS.db.debugMode then print("Hiding frame instantly (no fade)") end
         frame:Hide()
     end
-    currentNameplate = nil
 end
 
--- Handle target change
-local function OnTargetChanged()
-    local unit = "target"
-
+-- Refresh crosshair based on current active unit
+local function RefreshActiveUnit()
     -- Reset update timer to prevent stale color updates
     updateTimer = 0
 
-    if not UnitExists(unit) then
+    activeUnit = GetActiveUnit()
+
+    if not activeUnit then
         HideCrosshair()
         return
     end
 
-    -- Check if we should show crosshair for this target
-    if not CPlusNS.ShouldShowCrosshair(unit) then
-        HideCrosshair()
-        return
-    end
-
-    -- Get nameplate for target
-    local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
+    -- Get nameplate for active unit
+    local nameplate = C_NamePlate.GetNamePlateForUnit(activeUnit)
 
     if nameplate then
         -- AttachToNameplate already updates colors immediately
@@ -346,7 +332,7 @@ local arrowData = {
 }
 
 -- Reusable variables to avoid garbage collection
-local angle, radians, x, y, arrowRotation
+local angle, radians, x, y
 
 -- Cached rotation settings (updated when settings change)
 local cachedSpeed = 5.0
@@ -365,10 +351,6 @@ end
 -- Update arrow rotation (called from OnUpdate)
 -- Makes arrows orbit around the circle while pointing toward center
 local function UpdateArrowRotation(elapsed)
-    if not CPlusNS.db or not CPlusNS.db.arrowsRotate then
-        return
-    end
-
     -- CRITICAL: Don't rotate if arrows are disabled
     if CPlusNS.db.arrowStyle == "none" then
         return
@@ -462,9 +444,9 @@ local function OnUpdate(self, elapsed)
         updateTimer = 0
 
         -- Only update color, DO NOT hide/show (let events handle that)
-        if UnitExists("target") then
+        if activeUnit and UnitExists(activeUnit) then
             -- Update color in case it changed (e.g., tapped by someone else)
-            local r, g, b = CPlusNS.GetUnitColor("target")
+            local r, g, b = CPlusNS.GetUnitColor(activeUnit)
             ApplyColorToTextures(r, g, b)
         end
     end
@@ -472,9 +454,7 @@ end
 
 -- Refresh crosshair (called when settings change or on zone change)
 function CPlusNS.RefreshCrosshair()
-    if UnitExists("target") and frame:IsShown() then
-        OnTargetChanged()
-    end
+    RefreshActiveUnit()
 end
 
 -- Update arrow style (sets texture for all 4 arrows)
@@ -495,7 +475,7 @@ function CPlusNS.UpdateArrowStyle()
         if frame.ArrowLeft then frame.ArrowLeft:Hide() end
         return
     elseif arrowStyle:match("^arrow%d+$") then
-        -- Handle arrow0, arrow1, arrow2, ... arrow50
+        -- Handle arrow0, arrow1, arrow2, ... arrow72
         local arrowNum = arrowStyle:match("^arrow(%d+)$")
         texturePath = "Interface\\AddOns\\CrosshairsPlus\\Assets\\Arrow" .. arrowNum
     else
@@ -604,16 +584,18 @@ function CPlusNS.UpdateCrosshairVisuals()
     -- Refresh cached settings for performance
     RefreshRotationCache()
 
+    -- Re-evaluate which unit the crosshair should follow (e.g., after toggling enableActionTargeting)
+    RefreshActiveUnit()
+
     CPlusNS.UpdateLineThickness()
     CPlusNS.UpdateLineGap()
     CPlusNS.UpdateLineVisibility()
     CPlusNS.UpdateArrowStyle()
     CPlusNS.UpdateCircleStyle()
 
-    if frame:IsShown() and UnitExists("target") then
-        local r, g, b = CPlusNS.GetUnitColor("target")
+    if frame:IsShown() and activeUnit and UnitExists(activeUnit) then
+        local r, g, b = CPlusNS.GetUnitColor(activeUnit)
         ApplyColorToTextures(r, g, b)
-        HideTextElements()
 
         frame:SetScale(CPlusNS.db.crosshairScale or 1.0)
         frame:SetAlpha(CPlusNS.db.crosshairAlpha or 1.0)
@@ -684,6 +666,7 @@ function CPlusNS.InitializeCrosshair()
     CPlusNS.EventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
     CPlusNS.EventFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
     CPlusNS.EventFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+    CPlusNS.EventFrame:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
 
     if CPlusNS.db and CPlusNS.db.debugMode then
         print("|cff00ff00CrosshairsPlus|r: Events registered")
@@ -708,41 +691,51 @@ end
 
 -- Event: Player target changed
 function CPlusNS:PLAYER_TARGET_CHANGED()
-    OnTargetChanged()
+    RefreshActiveUnit()
+end
+
+-- Event: Soft enemy changed (Action Targeting)
+function CPlusNS:PLAYER_SOFT_ENEMY_CHANGED()
+    -- Only process if the feature is enabled and we don't have a hard target taking priority
+    if not CPlusNS.db.enableActionTargeting then
+        return
+    end
+    RefreshActiveUnit()
 end
 
 -- Event: Nameplate added (following Crosshairs addon pattern exactly)
 function CPlusNS:NAME_PLATE_UNIT_ADDED(unitToken)
-    -- Only care about nameplates if we have a target
-    if not UnitExists("target") then
+    -- Only care about nameplates if we have an active unit
+    if not activeUnit or not UnitExists(activeUnit) then
         return
     end
 
     -- Get the nameplate for this unit token directly from the event
     local nameplate = C_NamePlate.GetNamePlateForUnit(unitToken)
 
-    -- Check if this nameplate is for our current target (note parameter order!)
-    if nameplate and UnitIsUnit("target", unitToken) then
+    -- Check if this nameplate is for our active unit
+    if nameplate and UnitIsUnit(activeUnit, unitToken) then
         if CPlusNS.db and CPlusNS.db.debugMode then
-            local targetName = GetUnitName("target", false) or "Unknown"
-            print("NAMEPLATE_ADDED for target: " .. targetName .. ", nameplate=" .. tostring(nameplate))
+            local rawName = GetUnitName(activeUnit, false)
+            local targetName = (rawName and not issecretvalue(rawName)) and rawName or "Unknown"
+            print("NAMEPLATE_ADDED for " .. activeUnit .. ": " .. targetName .. ", nameplate=" .. tostring(nameplate))
         end
 
-        -- Check if we should show crosshair for this target
-        if CPlusNS.ShouldShowCrosshair("target") then
+        -- Check if we should show crosshair for this unit
+        if CPlusNS.ShouldShowCrosshair(activeUnit) then
             if CPlusNS.db and CPlusNS.db.debugMode then print("Attaching to nameplate from ADDED event") end
             AttachToNameplate(nameplate)
         else
-            if CPlusNS.db and CPlusNS.db.debugMode then print("Target exists but should NOT show crosshair (filtered out)") end
+            if CPlusNS.db and CPlusNS.db.debugMode then print("Active unit exists but should NOT show crosshair (filtered out)") end
         end
     end
 end
 
 -- Event: Nameplate removed (following Crosshairs addon pattern)
 function CPlusNS:NAME_PLATE_UNIT_REMOVED(unitToken)
-    -- Check if the removed unit is our target
-    if UnitIsUnit("target", unitToken) then
-        if CPlusNS.db and CPlusNS.db.debugMode then print("NAMEPLATE_REMOVED for target - hiding") end
+    -- Check if the removed unit is our active unit
+    if activeUnit and UnitIsUnit(activeUnit, unitToken) then
+        if CPlusNS.db and CPlusNS.db.debugMode then print("NAMEPLATE_REMOVED for " .. activeUnit .. " - hiding") end
         HideCrosshair()
     end
 end
