@@ -34,7 +34,7 @@ CrosshairsPlus displays a customizable visual crosshair on your current target's
 
 ### Compatibility
 
-- **WoW Version:** The War Within (11.0.2+)
+- **WoW Version:** The War Within (11.0.2+) / Midnight (12.0)
 - **Works with:** ElvUI, Plater, KUI Nameplates, and most UI addons
 
 ### Credits
@@ -112,19 +112,3 @@ A: CrosshairsPlus works on your current hard target. It also supports WoW's Acti
 **Q: Can I change the colors manually?**
 A: Currently colors are automatic based on class/reaction. Custom color picker is planned for a future update.
 
----
-
-## Version History / Changelog Format
-
-### Version 1.0.2 - Initial Release
-First public release of CrosshairsPlus!
-- 73 customizable arrow texture styles
-- Class-based automatic coloring
-- Target filtering (enemy players, friendly players, hostile NPCs, friendly NPCs)
-- Action Targeting support for soft enemy targets
-- Rotating arrow animations with speed control
-- Adjustable scale (50%-200%) and opacity (0%-100%)
-- Customizable crosshair lines with thickness control
-- Modern settings interface with four categories
-- Smooth fade animations
-- Lightweight and performance optimized
