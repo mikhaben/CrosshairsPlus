@@ -1,0 +1,45 @@
+## Interface: 120000
+## Title: CrosshairsPlus
+## Notes: Enhanced crosshair addon with customizable target filtering and visual styles
+## Author: justLuther
+## Version: 1.5.0
+## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\Logo
+## SavedVariables: CrosshairsPlusDB
+
+# Libraries
+Libs/LibStub/LibStub.lua
+Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Libs/AceGUI-3.0/AceGUI-3.0.xml
+Libs/AceConfig-3.0/AceConfig-3.0.xml
+Libs/LibSharedMedia-3.0/lib.xml
+Libs/AceGUI-3.0-SharedMediaWidgets/widget.xml
+
+# Core
+Core.lua
+
+# Frame definition
+Crosshair.xml
+
+# Crosshair modules (State first, Init last)
+Crosshair/State.lua
+Crosshair/Debug.lua
+Crosshair/UnitLogic.lua
+Crosshair/Lines.lua
+Crosshair/Arrows.lua
+Crosshair/Circle.lua
+Crosshair/Range.lua
+Crosshair/TargetInfo.lua
+Crosshair/Attach.lua
+Crosshair/OnUpdate.lua
+Crosshair/Init.lua
+
+# Settings (AceConfig option tables)
+Settings/Widgets.lua
+Settings/GeneralTab.lua
+Settings/CircleTab.lua
+Settings/LinesTab.lua
+Settings/ArrowsTab.lua
+Settings/RangeTab.lua
+Settings/TargetInfoTab.lua
+Settings/AboutTab.lua
+Settings/Init.lua
