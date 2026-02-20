@@ -7,6 +7,10 @@ local AddonName, CPlusNS = ...
 local state = CPlusNS.state
 local CONST = CPlusNS.CONST
 
+-- Cache math functions and constants for hot-path performance
+local RAD = math.pi / 180
+local sin, cos = math.sin, math.cos
+
 -- Reusable variables to avoid garbage collection (file-local for hot-path performance)
 local angle, radians, x, y
 
@@ -24,11 +28,6 @@ end
 -- NOTE: Intentionally unrolled for per-frame performance — do NOT convert to loop
 function CPlusNS.UpdateArrowRotation(elapsed)
     local frame = state.frame
-
-    -- CRITICAL: Don't rotate if arrows are disabled
-    if CPlusNS.db.arrowStyle == "none" then
-        return
-    end
 
     if not frame or not frame.ArrowTop or not frame.Core then
         CPlusNS.Debug("UpdateArrowRotation: frame or arrows not found")
@@ -56,39 +55,39 @@ function CPlusNS.UpdateArrowRotation(elapsed)
 
     -- Update ArrowTop
     angle = rotAngle + arrowData[1].offset
-    radians = math.rad(angle)
-    x = radius * math.sin(radians)
-    y = radius * math.cos(radians)
+    radians = angle * RAD
+    x = radius * sin(radians)
+    y = radius * cos(radians)
     frame.ArrowTop:ClearAllPoints()
     frame.ArrowTop:SetPoint("CENTER", frame.Core, "CENTER", x, y)
-    frame.ArrowTop:SetRotation(math.rad(-rotAngle + arrowData[1].rotationOffset))
+    frame.ArrowTop:SetRotation((-rotAngle + arrowData[1].rotationOffset) * RAD)
 
     -- Update ArrowRight
     angle = rotAngle + arrowData[2].offset
-    radians = math.rad(angle)
-    x = radius * math.sin(radians)
-    y = radius * math.cos(radians)
+    radians = angle * RAD
+    x = radius * sin(radians)
+    y = radius * cos(radians)
     frame.ArrowRight:ClearAllPoints()
     frame.ArrowRight:SetPoint("CENTER", frame.Core, "CENTER", x, y)
-    frame.ArrowRight:SetRotation(math.rad(-rotAngle + arrowData[2].rotationOffset))
+    frame.ArrowRight:SetRotation((-rotAngle + arrowData[2].rotationOffset) * RAD)
 
     -- Update ArrowBottom
     angle = rotAngle + arrowData[3].offset
-    radians = math.rad(angle)
-    x = radius * math.sin(radians)
-    y = radius * math.cos(radians)
+    radians = angle * RAD
+    x = radius * sin(radians)
+    y = radius * cos(radians)
     frame.ArrowBottom:ClearAllPoints()
     frame.ArrowBottom:SetPoint("CENTER", frame.Core, "CENTER", x, y)
-    frame.ArrowBottom:SetRotation(math.rad(-rotAngle + arrowData[3].rotationOffset))
+    frame.ArrowBottom:SetRotation((-rotAngle + arrowData[3].rotationOffset) * RAD)
 
     -- Update ArrowLeft
     angle = rotAngle + arrowData[4].offset
-    radians = math.rad(angle)
-    x = radius * math.sin(radians)
-    y = radius * math.cos(radians)
+    radians = angle * RAD
+    x = radius * sin(radians)
+    y = radius * cos(radians)
     frame.ArrowLeft:ClearAllPoints()
     frame.ArrowLeft:SetPoint("CENTER", frame.Core, "CENTER", x, y)
-    frame.ArrowLeft:SetRotation(math.rad(-rotAngle + arrowData[4].rotationOffset))
+    frame.ArrowLeft:SetRotation((-rotAngle + arrowData[4].rotationOffset) * RAD)
 end
 
 -- Update arrow style (sets texture for all 4 arrows)
@@ -103,7 +102,8 @@ function CPlusNS.UpdateArrowStyle()
     -- Map style to texture path
     local texturePath
     if arrowStyle == "none" then
-        for _, key in ipairs(CONST.ARROW_KEYS) do
+        for i = 1, #CONST.ARROW_KEYS do
+            local key = CONST.ARROW_KEYS[i]
             if frame[key] then frame[key]:Hide() end
         end
         return
@@ -120,7 +120,8 @@ function CPlusNS.UpdateArrowStyle()
     local arrowSize = CPlusNS.db.arrowSize
 
     -- Apply texture and size to all 4 arrows and show them
-    for _, key in ipairs(CONST.ARROW_KEYS) do
+    for i = 1, #CONST.ARROW_KEYS do
+        local key = CONST.ARROW_KEYS[i]
         if frame[key] then
             frame[key]:SetTexture(texturePath)
             frame[key]:SetSize(arrowSize, arrowSize)
@@ -137,7 +138,8 @@ function CPlusNS.UpdateArrowStyle()
         local distance = CPlusNS.db.arrowDistance
 
         -- Reset arrows to fixed positions - each pointing toward center
-        for _, data in ipairs(CONST.ARROW_DATA) do
+        for i = 1, #CONST.ARROW_DATA do
+            local data = CONST.ARROW_DATA[i]
             if frame[data.key] then
                 frame[data.key]:ClearAllPoints()
                 frame[data.key]:SetPoint("CENTER", frame.Core, "CENTER", data.sx * distance, data.sy * distance)

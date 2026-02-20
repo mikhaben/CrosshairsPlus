@@ -8,14 +8,15 @@ local state = CPlusNS.state
 
 -- Cache sub-addon availability once (nil = not checked yet)
 local rangeAddonAvailable = nil
+local rangeDisabledRuntime = false
 
 -- Update range display text (called from OnUpdate every 0.3s)
 function CPlusNS.UpdateRangeDisplay()
     local frame = state.frame
     if not frame then return end
 
-    if not CPlusNS.db.showRange or not state.activeUnit or not UnitExists(state.activeUnit) then
-        if frame.RangeText:IsShown() then frame.RangeText:Hide() end
+    if rangeDisabledRuntime or not CPlusNS.db.showRange or not state.activeUnit or not UnitExists(state.activeUnit) then
+        if frame.RangeText and frame.RangeText:IsShown() then frame.RangeText:Hide() end
         return
     end
 
@@ -26,8 +27,8 @@ function CPlusNS.UpdateRangeDisplay()
             rangeAddonAvailable = C_AddOns.GetAddOnEnableState("CrosshairsPlus_Range") > 0
         end
         if not rangeAddonAvailable then
-            CPlusNS.db.showRange = false
-            if frame.RangeText:IsShown() then frame.RangeText:Hide() end
+            rangeDisabledRuntime = true
+            if frame.RangeText and frame.RangeText:IsShown() then frame.RangeText:Hide() end
             return
         end
         local loaded = C_AddOns.LoadAddOn("CrosshairsPlus_Range")
@@ -36,8 +37,8 @@ function CPlusNS.UpdateRangeDisplay()
             CPlusNS.Debug("LibRangeCheck-3.0 loaded on demand")
         else
             rangeAddonAvailable = false
-            CPlusNS.db.showRange = false
-            if frame.RangeText:IsShown() then frame.RangeText:Hide() end
+            rangeDisabledRuntime = true
+            if frame.RangeText and frame.RangeText:IsShown() then frame.RangeText:Hide() end
             return
         end
     end

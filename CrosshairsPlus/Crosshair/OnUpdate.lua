@@ -5,10 +5,7 @@
 
 local AddonName, CPlusNS = ...
 local state = CPlusNS.state
-local CONST = CPlusNS.CONST
-
--- Track last color for debug change detection
-local lastDebugR, lastDebugG, lastDebugB = 0, 0, 0
+local UPDATE_INTERVAL = CPlusNS.CONST.UPDATE_INTERVAL
 
 -- OnUpdate handler for continuous updates (range, color changes, rotation, etc.)
 local function OnUpdate(self, elapsed)
@@ -23,33 +20,32 @@ local function OnUpdate(self, elapsed)
         CPlusNS.UpdateArrowRotation(elapsed)
     end
 
-    if state.updateTimer >= CONST.UPDATE_INTERVAL then
+    if state.updateTimer >= UPDATE_INTERVAL then
         state.updateTimer = 0
 
         -- Only update color, DO NOT hide/show (let events handle that)
         if state.activeUnit and UnitExists(state.activeUnit) then
-            -- Update color in case it changed (e.g., tapped by someone else)
+            -- Update color only when it changes (e.g., tapped by someone else, threat transition)
             local r, g, b = CPlusNS.GetUnitColor(state.activeUnit)
-            CPlusNS.ApplyColorToTextures(r, g, b)
-
-            -- Cache color for reuse by Range and TargetInfo
-            state.lastUnitR, state.lastUnitG, state.lastUnitB = r, g, b
-
-            -- Log when color changes (e.g., neutral -> hostile)
-            if CPlusNS.db.debugMode then
-                if r ~= lastDebugR or g ~= lastDebugG or b ~= lastDebugB then
+            if r ~= state.lastUnitR or g ~= state.lastUnitG or b ~= state.lastUnitB then
+                if CPlusNS.db.debugMode then
                     CPlusNS.Debugf("OnUpdate color changed: (%.2f,%.2f,%.2f) -> (%.2f,%.2f,%.2f) unit=%s",
-                        lastDebugR, lastDebugG, lastDebugB, r, g, b, CPlusNS.DebugUnitInfo(state.activeUnit))
-                    lastDebugR, lastDebugG, lastDebugB = r, g, b
+                        state.lastUnitR, state.lastUnitG, state.lastUnitB, r, g, b, CPlusNS.DebugUnitInfo(state.activeUnit))
                 end
+                state.lastUnitR, state.lastUnitG, state.lastUnitB = r, g, b
+                CPlusNS.ApplyColorToTextures(r, g, b)
             end
         end
 
-        -- Update range display (zero overhead when disabled — early-exits immediately)
-        CPlusNS.UpdateRangeDisplay()
+        -- Update range display (skip call entirely when disabled)
+        if CPlusNS.db.showRange then
+            CPlusNS.UpdateRangeDisplay()
+        end
 
-        -- Update target info color (text is set once on target switch)
-        CPlusNS.UpdateTargetInfoColor()
+        -- Update target info color (skip when feature is off or not using target color)
+        if CPlusNS.db.showTargetInfo and CPlusNS.db.targetInfoUseTargetColor then
+            CPlusNS.UpdateTargetInfoColor()
+        end
     end
 end
 

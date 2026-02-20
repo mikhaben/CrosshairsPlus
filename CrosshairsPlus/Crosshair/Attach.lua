@@ -156,8 +156,6 @@ function CPlusNS.HideCrosshair()
         frame.TargetInfoText:Hide()
     end
 
-    -- Nudge GC during idle (target lost) to reclaim combat allocations
-    collectgarbage("step", 50)
 end
 
 -- Refresh crosshair based on current active unit
