@@ -63,14 +63,14 @@ CPlusNS.defaults = {
     rangeUseTargetColor = true,
 
     -- Target info display
-    showTargetInfo = false,
-    targetInfoMode = "name",
+    showTargetInfo = true,
+    targetInfoMode = "namelevel",
     targetInfoPosition = "BOTTOM",
     targetInfoFont = "Default",
     targetInfoFontSize = 14,
     targetInfoXOffset = 0,
     targetInfoYOffset = 0,
-    targetInfoUseTargetColor = false,
+    targetInfoUseTargetColor = true,
 }
 
 -- Deep copy function for tables
