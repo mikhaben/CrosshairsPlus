@@ -15,7 +15,7 @@ local function OnUpdate(self, elapsed)
 
     state.updateTimer = state.updateTimer + elapsed
 
-    -- Update arrow rotation every frame if enabled (skip when no target, e.g. /chp show diagnostic)
+    -- Update arrow rotation every frame if enabled (skip when no target, e.g. /chp preview diagnostic)
     if state.activeUnit and CPlusNS.db.arrowsRotate and CPlusNS.db.arrowStyle ~= "none" then
         CPlusNS.UpdateArrowRotation(elapsed)
     end

@@ -45,8 +45,7 @@ function CPlusNS.BuildAboutTab()
                 name = "|cffffd100/chp|r — Open settings panel\n" ..
                        "|cffffd100/chp debug|r — Toggle debug mode\n" ..
                        "|cffffd100/chp test|r — Run diagnostics\n" ..
-                       "|cffffd100/chp show|r — Force show crosshair at screen center\n" ..
-                       "|cffffd100/chp hide|r — Hide crosshair",
+                       "|cffffd100/chp preview|r — Toggle crosshair at screen center",
                 order = 11,
                 fontSize = "medium",
             },

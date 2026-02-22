@@ -39,8 +39,7 @@ A World of Warcraft addon that displays a customizable crosshair overlay on your
 | `/chp` or `/crosshairsplus` | Open settings |
 | `/chp debug` | Toggle debug logging |
 | `/chp test` | Show diagnostic info |
-| `/chp show` | Force crosshair to screen center |
-| `/chp hide` | Hide crosshair |
+| `/chp preview` | Toggle crosshair at screen center |
 
 ## Development
 

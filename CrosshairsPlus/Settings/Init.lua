@@ -29,7 +29,7 @@ function CPlusNS.InitializeSettings()
     }
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("CrosshairsPlus", options)
-    CPlusNS.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("CrosshairsPlus", "CrosshairsPlus")
+    CPlusNS.optionsFrame, CPlusNS.optionsCategoryID = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("CrosshairsPlus", "CrosshairsPlus")
 
     if CPlusNS.db and CPlusNS.db.debugMode then
         print("|cff00ff00CrosshairsPlus|r: AceConfig options registered")
@@ -37,5 +37,5 @@ function CPlusNS.InitializeSettings()
 end
 
 function CPlusNS.OpenSettings()
-    Settings.OpenToCategory("CrosshairsPlus")
+    Settings.OpenToCategory(CPlusNS.optionsCategoryID)
 end

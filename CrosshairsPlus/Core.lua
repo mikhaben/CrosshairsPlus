@@ -203,21 +203,20 @@ SlashCmdList["CROSSHAIRSPLUS"] = function(msg)
         end
     elseif msg == "test" then
         CPlusNS.RunDiagnostics()
-    elseif msg == "show" then
-        -- Force show crosshair for testing (activeUnit remains nil — no color/range updates)
+    elseif msg == "preview" then
         if CrosshairsPlusFrame then
-            CrosshairsPlusFrame:SetParent(UIParent)
-            CrosshairsPlusFrame:ClearAllPoints()
-            CrosshairsPlusFrame:SetPoint("CENTER", UIParent, "CENTER")
-            CrosshairsPlusFrame:Show()
-            print("|cff00ff00CrosshairsPlus|r: Crosshair forced to center of screen")
+            if CrosshairsPlusFrame:IsShown() then
+                CrosshairsPlusFrame:Hide()
+                print("|cff00ff00CrosshairsPlus|r: Crosshair hidden")
+            else
+                CrosshairsPlusFrame:SetParent(UIParent)
+                CrosshairsPlusFrame:ClearAllPoints()
+                CrosshairsPlusFrame:SetPoint("CENTER", UIParent, "CENTER")
+                CrosshairsPlusFrame:Show()
+                print("|cff00ff00CrosshairsPlus|r: Crosshair forced to center of screen")
+            end
         else
             print("|cffff0000CrosshairsPlus|r: Frame not found!")
-        end
-    elseif msg == "hide" then
-        if CrosshairsPlusFrame then
-            CrosshairsPlusFrame:Hide()
-            print("|cff00ff00CrosshairsPlus|r: Crosshair hidden")
         end
     else
         -- Open settings panel

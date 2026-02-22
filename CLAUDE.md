@@ -231,6 +231,5 @@ LibRangeCheck-3.0 lives in the `CrosshairsPlus_Range` LoadOnDemand sub-addon. `R
 |---------|---------|
 | `/chp test` | Full diagnostics dump — runtime state, settings, CVars, warnings |
 | `/chp debug` | Toggle debug mode — logs events, color changes, attach/detach |
-| `/chp show` | Force crosshair to screen center (no unit attached — visual test only) |
-| `/chp hide` | Hide crosshair |
+| `/chp preview` | Toggle crosshair at screen center (no unit attached — visual test only) |
 | `/chp` | Open settings panel |
