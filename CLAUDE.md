@@ -4,7 +4,7 @@
 
 - **Type:** World of Warcraft addon
 - **Language:** Lua + XML
-- **Version:** 1.5.0
+- **Version:** 1.5.1
 - **Interface:** 120000 (Midnight / The War Within)
 - **Author:** asp1d (TOC author: justLuther)
 - **SavedVariables:** `CrosshairsPlusDB`
@@ -211,8 +211,8 @@ LibRangeCheck-3.0 lives in the `CrosshairsPlus_Range` LoadOnDemand sub-addon. `R
 ./build.sh
 ```
 
-- Reads version from TOC: `## Version: 1.5.0`
-- Output: `build/CrosshairsPlus_1.5.0_YYYY-MM-DD.zip`
+- Reads version from TOC: `## Version: 1.5.1`
+- Output: `build/CrosshairsPlus_1.5.1_YYYY-MM-DD.zip`
 - ZIP contains both `CrosshairsPlus/` and `CrosshairsPlus_Range/` folders
 - Upload to CurseForge
 

@@ -1,5 +1,13 @@
 # CrosshairsPlus - Release Notes
 
+## [1.5.1] - 2026-02-22
+
+### Bug Fixes
+
+- Fixed `/chp show` and `/chp hide` references to use new `/chp preview` toggle command
+
+---
+
 ## [1.5.0] - 2026-02-20
 
 ### Modular Architecture & Circle System

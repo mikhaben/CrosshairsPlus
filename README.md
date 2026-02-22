@@ -1,6 +1,6 @@
 # CrosshairsPlus
 
-**Version:** 1.5.0 | **Interface:** 120000 (The War Within / Midnight) | **Author:** asp1d
+**Version:** 1.5.1 | **Interface:** 120000 (The War Within / Midnight) | **Author:** asp1d
 
 A World of Warcraft addon that displays a customizable crosshair overlay on your target's nameplate. Great for PvP targeting and raid awareness.
 
@@ -45,7 +45,7 @@ A World of Warcraft addon that displays a customizable crosshair overlay on your
 
 ```bash
 git clone <repo>
-./build.sh  # creates build/CrosshairsPlus_1.5.0_YYYY-MM-DD.zip
+./build.sh  # creates build/CrosshairsPlus_1.5.1_YYYY-MM-DD.zip
 ```
 
 The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP.
@@ -70,6 +70,9 @@ The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP
 - **semlar** - Crosshairs addon inspiration
 
 ## Changelog
+
+### 1.5.1 (2026-02-22)
+- Fixed `/chp show`/`/chp hide` references to use new `/chp preview` toggle
 
 ### 1.5.0 (2026-02-20)
 - Modular architecture refactor (11 Crosshair modules, 9 Settings modules, 7 settings tabs)
