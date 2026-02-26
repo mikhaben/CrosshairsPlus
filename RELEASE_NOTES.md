@@ -1,5 +1,13 @@
 # CrosshairsPlus - Release Notes
 
+## [1.5.2] - 2026-02-26
+
+### Bug Fixes
+
+- Fixed stale crosshair remaining visible on previous target's nameplate when switching to a target with a forbidden nameplate (instance/protected frames)
+
+---
+
 ## [1.5.1] - 2026-02-22
 
 ### Bug Fixes

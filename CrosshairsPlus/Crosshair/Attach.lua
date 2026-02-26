@@ -75,6 +75,13 @@ function CPlusNS.AttachToNameplate(nameplate)
         return
     end
 
+    -- Cannot parent to forbidden nameplates (instance/protected frames)
+    if nameplate.IsForbidden and nameplate:IsForbidden() then
+        CPlusNS.Debug("AttachToNameplate: nameplate is forbidden — cannot attach")
+        CPlusNS.HideCrosshair()
+        return
+    end
+
     if CPlusNS.db.debugMode then
         CPlusNS.Debugf("AttachToNameplate: %s (%s) wasShown=%s",
             GetUnitName(state.activeUnit, false) or "Unknown", state.activeUnit, tostring(frame:IsShown()))
