@@ -113,40 +113,65 @@ function CPlusNS:PLAYER_SOFT_ENEMY_CHANGED()
     CPlusNS.RefreshActiveUnit()
 end
 
--- Event: Nameplate added (following Crosshairs addon pattern exactly)
+-- Adaptive throttle: attach immediately normally, debounce during rapid nameplate cycling (melee range flicker)
+local attachGen = 0
+local lastRemovedTime = 0
+local RAPID_THRESHOLD = 0.1
+
+-- Event: Nameplate added
 function CPlusNS:NAME_PLATE_UNIT_ADDED(unitToken)
-    -- Only care about nameplates if we have an active unit
     if not state.activeUnit or not UnitExists(state.activeUnit) then
         return
     end
 
-    -- Get the nameplate for this unit token directly from the event (includeForbidden for instances)
     local nameplate = C_NamePlate.GetNamePlateForUnit(unitToken, true)
+    if not nameplate or not UnitIsUnit(state.activeUnit, unitToken) then
+        return
+    end
 
-    -- Check if this nameplate is for our active unit
-    if nameplate and UnitIsUnit(state.activeUnit, unitToken) then
-        if CPlusNS.db.debugMode then
-            CPlusNS.Debugf("NAME_PLATE_UNIT_ADDED for %s: %s",
-                state.activeUnit, GetUnitName(state.activeUnit, false) or "Unknown")
-        end
+    if not CPlusNS.ShouldShowCrosshair(state.activeUnit) then
+        CPlusNS.Debug("Active unit filtered out — not showing crosshair")
+        return
+    end
 
-        -- Check if we should show crosshair for this unit
-        if CPlusNS.ShouldShowCrosshair(state.activeUnit) then
-            CPlusNS.Debug("Attaching to nameplate from ADDED event")
-            CPlusNS.AttachToNameplate(nameplate)
-        else
-            CPlusNS.Debug("Active unit filtered out — not showing crosshair")
-        end
+    if CPlusNS.db.debugMode then
+        CPlusNS.Debugf("NAME_PLATE_UNIT_ADDED for %s: %s",
+            state.activeUnit, GetUnitName(state.activeUnit, false) or "Unknown")
+    end
+
+    local isRapidCycle = (GetTime() - lastRemovedTime) < RAPID_THRESHOLD
+
+    if isRapidCycle then
+        -- Rapid nameplate cycling detected (melee range): debounce attach
+        attachGen = attachGen + 1
+        local gen = attachGen
+        local unit = state.activeUnit
+        CPlusNS.Debug("Rapid nameplate cycle detected — debouncing attach")
+        C_Timer.After(0.1, function()
+            if gen ~= attachGen then return end
+            if state.activeUnit ~= unit then return end
+            local np = C_NamePlate.GetNamePlateForUnit(unit, true)
+            if np then
+                CPlusNS.Debug("Debounced attach firing")
+                CPlusNS.AttachToNameplate(np)
+            end
+        end)
+    else
+        -- Normal: attach immediately
+        attachGen = attachGen + 1
+        CPlusNS.Debug("Attaching to nameplate from ADDED event")
+        CPlusNS.AttachToNameplate(nameplate)
     end
 end
 
--- Event: Nameplate removed (following Crosshairs addon pattern)
+-- Event: Nameplate removed
 function CPlusNS:NAME_PLATE_UNIT_REMOVED(unitToken)
-    -- Check if the removed unit is our active unit
     if state.activeUnit and UnitIsUnit(state.activeUnit, unitToken) then
         if CPlusNS.db.debugMode then
             CPlusNS.Debug("NAME_PLATE_UNIT_REMOVED for " .. state.activeUnit .. " — hiding")
         end
+        lastRemovedTime = GetTime()
+        attachGen = attachGen + 1  -- Cancel any pending debounced attach
         CPlusNS.HideCrosshair()
     end
 end
