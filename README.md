@@ -13,7 +13,7 @@ A World of Warcraft addon that displays a customizable crosshair overlay on your
 - Target info display (name or name + level)
 - LibSharedMedia font integration for text elements
 - Target filtering (enemy/friendly players, hostile/friendly NPCs, critters)
-- Class-based automatic coloring with color-match text options
+- Color mode selection: Reaction, Class, or Custom colors for enemy/friendly targets
 - Action Targeting support (soft enemy targets)
 - Frame strata control (rendering layer selection)
 - Customizable lines, scale, opacity, arrow distance and size
@@ -69,23 +69,4 @@ The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP
 - **Mesostealthy** - weizPvP inspiration
 - **semlar** - Crosshairs addon inspiration
 
-## Changelog
-
-### 1.5.2 (2026-02-26)
-- Fixed stale crosshair when targeting units with forbidden nameplates (instance/protected frames)
-
-### 1.5.1 (2026-02-22)
-- Fixed `/chp show`/`/chp hide` references to use new `/chp preview` toggle
-
-### 1.5.0 (2026-02-20)
-- Modular architecture refactor (11 Crosshair modules, 9 Settings modules, 7 settings tabs)
-- Circle crosshair system: 6 styles with glow/shadow effects and size adjustment
-- Range display via LoadOnDemand sub-addon (LibRangeCheck-3.0)
-- Target info display (name or name + level)
-- LibSharedMedia-3.0 font integration, frame strata control, text anchoring with offsets
-
-### 1.0.2 (2025-02-17)
-- Midnight compatibility (Interface 12.0), Action Targeting support, addon icon, settings cleanup
-
-### 1.0.0 (2025-02-10)
-- Initial release with 73 arrow styles, class coloring, target filtering, rotation animation, crosshair lines
+See [RELEASE_NOTES.md](RELEASE_NOTES.md) for the full changelog.
