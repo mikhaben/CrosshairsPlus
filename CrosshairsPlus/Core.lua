@@ -29,7 +29,9 @@ CPlusNS.defaults = {
     enableActionTargeting = false,
 
     -- Visual options
-    enableClassColors = true,
+    colorMode = "class", -- "reaction", "class", "custom"
+    customFriendlyColor = { r = 0, g = 1, b = 0 },
+    customEnemyColor = { r = 1, g = 0, b = 0 },
     showLines = true,
 
     -- Debug

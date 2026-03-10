@@ -27,7 +27,7 @@ function CPlusNS.DebugUnitInfo(unit)
     local name = GetUnitName(unit, false) or "?"
     local reaction = UnitReaction("player", unit) or "?"
     local dead = UnitIsDead(unit) and " DEAD" or ""
-    local hostile = (UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)) and "hostile" or "friendly"
+    local hostile = (UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)) and "hostile" or "friendly" -- inline: Debug.lua loads before UnitLogic.lua
     local threat = UnitThreatSituation("player", unit)
     local threatStr = threat and (" threat=" .. threat) or ""
     local hasPlate = C_NamePlate.GetNamePlateForUnit(unit, true) and "yes" or "no"
@@ -75,7 +75,7 @@ function CPlusNS.RunDiagnostics()
     print("  Enemy: " .. on(db.showEnemy) .. "  Players: " .. on(db.showEnemyPlayers) .. "  NPCs: " .. on(db.showEnemyNPCs) .. "  Critters: " .. on(db.showEnemyCritters))
     print("  Friendly: " .. on(db.showFriendly) .. "  Players: " .. on(db.showFriendlyPlayers) .. "  NPCs: " .. on(db.showFriendlyNPCs) .. "  Critters: " .. on(db.showFriendlyCritters))
     print("  Action Targeting: " .. on(db.enableActionTargeting))
-    print("  Class Colors: " .. on(db.enableClassColors))
+    print("  Color Mode: " .. val(db.colorMode))
 
     -- Visual
     print(H .. "--- Visual ---" .. E)

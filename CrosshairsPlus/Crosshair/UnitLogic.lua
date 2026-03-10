@@ -5,6 +5,10 @@
 
 local AddonName, CPlusNS = ...
 
+local function IsHostile(unit)
+    return UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)
+end
+
 -- Check if target should show crosshair based on user settings
 function CPlusNS.ShouldShowCrosshair(unit)
     if not unit or not UnitExists(unit) then
@@ -17,7 +21,7 @@ function CPlusNS.ShouldShowCrosshair(unit)
 
     local db = CPlusNS.db
 
-    local isHostile = UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)
+    local isHostile = IsHostile(unit)
 
     -- Check if unit is a player
     if UnitIsPlayer(unit) then
@@ -90,29 +94,8 @@ function CPlusNS.GetActiveUnit()
     return nil
 end
 
--- Get color for unit based on type and class
-function CPlusNS.GetUnitColor(unit)
-    if not unit or not UnitExists(unit) then
-        return 1, 1, 1 -- Default white
-    end
-
-    local db = CPlusNS.db
-
-    -- Check if tapped by another player (gray)
-    if UnitIsTapDenied(unit) then
-        return 0.5, 0.5, 0.5
-    end
-
-    -- Player units with class coloring enabled
-    if UnitIsPlayer(unit) and db.enableClassColors then
-        local _, class = UnitClass(unit)
-        if class and RAID_CLASS_COLORS[class] then
-            local color = RAID_CLASS_COLORS[class]
-            return color.r, color.g, color.b
-        end
-    end
-
-    -- Use WoW's FACTION_BAR_COLORS for reaction-based coloring
+-- Reaction-based color (FACTION_BAR_COLORS with threat override)
+local function GetReactionColor(unit)
     local reaction = UnitReaction("player", unit)
 
     -- Neutral mobs (reaction 4/yellow) stay reaction 4 even after you attack them.
@@ -128,9 +111,47 @@ function CPlusNS.GetUnitColor(unit)
     end
 
     -- Fallback: hostile red, friendly green
-    if UnitCanAttack("player", unit) or UnitIsEnemy("player", unit) then
+    if IsHostile(unit) then
         return 1, 0, 0
     end
 
     return 0, 1, 0
+end
+
+-- Get color for unit based on color mode setting
+function CPlusNS.GetUnitColor(unit)
+    if not unit or not UnitExists(unit) then
+        return 1, 1, 1 -- Default white
+    end
+
+    local db = CPlusNS.db
+
+    -- Tapped by another player is always gray
+    if UnitIsTapDenied(unit) then
+        return 0.5, 0.5, 0.5
+    end
+
+    local mode = db.colorMode or "class"
+
+    if mode == "custom" then
+        local isHostile = IsHostile(unit)
+        if isHostile then
+            local c = db.customEnemyColor
+            return c.r, c.g, c.b
+        else
+            local c = db.customFriendlyColor
+            return c.r, c.g, c.b
+        end
+    end
+
+    if mode == "class" and UnitIsPlayer(unit) then
+        local _, class = UnitClass(unit)
+        if class and RAID_CLASS_COLORS[class] then
+            local color = RAID_CLASS_COLORS[class]
+            return color.r, color.g, color.b
+        end
+    end
+
+    -- "reaction" mode, or "class" mode fallthrough for NPCs
+    return GetReactionColor(unit)
 end

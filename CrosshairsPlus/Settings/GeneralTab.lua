@@ -154,14 +154,53 @@ function CPlusNS.BuildGeneralTab()
                 name = "Visual Options",
                 order = 30,
             },
-            enableClassColors = {
-                type = "toggle",
-                name = "Enable Class Coloring",
-                desc = "Color player targets based on their class",
+            colorMode = {
+                type = "select",
+                name = "Color Mode",
+                desc = "How the crosshair color is determined:\n\nReaction: Standard WoW reaction colors (red hostile, green friendly, etc.)\nClass: Class colors for players, reaction colors for NPCs\nCustom: Choose your own colors for enemy and friendly targets",
                 order = 31,
-                width = "full",
-                get = function() return CPlusNS.db.enableClassColors end,
-                set = function(_, v) CPlusNS.db.enableClassColors = v; CPlusNS.UpdateCrosshairVisuals() end,
+                values = {
+                    reaction = "Reaction",
+                    class = "Class",
+                    custom = "Custom",
+                },
+                sorting = { "reaction", "class", "custom" },
+                get = function() return CPlusNS.db.colorMode end,
+                set = function(_, v) CPlusNS.db.colorMode = v; CPlusNS.UpdateCrosshairVisuals() end,
+            },
+            customEnemyColor = {
+                type = "color",
+                name = "Enemy Color",
+                desc = "Custom color for hostile targets",
+                order = 31.1,
+                disabled = function() return CPlusNS.db.colorMode ~= "custom" end,
+                get = function()
+                    local c = CPlusNS.db.customEnemyColor
+                    return c.r, c.g, c.b
+                end,
+                set = function(_, r, g, b)
+                    CPlusNS.db.customEnemyColor.r = r
+                    CPlusNS.db.customEnemyColor.g = g
+                    CPlusNS.db.customEnemyColor.b = b
+                    CPlusNS.UpdateCrosshairVisuals()
+                end,
+            },
+            customFriendlyColor = {
+                type = "color",
+                name = "Friendly Color",
+                desc = "Custom color for friendly targets",
+                order = 31.2,
+                disabled = function() return CPlusNS.db.colorMode ~= "custom" end,
+                get = function()
+                    local c = CPlusNS.db.customFriendlyColor
+                    return c.r, c.g, c.b
+                end,
+                set = function(_, r, g, b)
+                    CPlusNS.db.customFriendlyColor.r = r
+                    CPlusNS.db.customFriendlyColor.g = g
+                    CPlusNS.db.customFriendlyColor.b = b
+                    CPlusNS.UpdateCrosshairVisuals()
+                end,
             },
             frameStrata = {
                 type = "select",
