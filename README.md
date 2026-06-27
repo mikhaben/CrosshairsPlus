@@ -1,6 +1,6 @@
 # CrosshairsPlus
 
-**Interface:** 120000 (The War Within / Midnight) | **Author:** asp1d
+**Interface:** 120007 (The War Within / Midnight) | **Author:** asp1d
 
 A World of Warcraft addon that displays a customizable crosshair overlay on your target's nameplate. Great for PvP targeting and raid awareness.
 

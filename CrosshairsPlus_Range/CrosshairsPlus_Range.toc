@@ -1,4 +1,4 @@
-## Interface: 120000
+## Interface: 120007
 ## Title: CrosshairsPlus - Range Check
 ## Notes: LibRangeCheck-3.0 for CrosshairsPlus range display (loaded on demand)
 ## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\Logo
