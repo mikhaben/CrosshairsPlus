@@ -1,5 +1,17 @@
 # CrosshairsPlus - Release Notes
 
+## [1.6.1] - 2026-06-28
+
+### WoW 12.0.7 Compatibility
+
+**Changed**
+- Bumped supported interface version to 120007 for the current Midnight patch (12.0.7).
+
+**Verified**
+- Reviewed the 12.0.5/12.0.7 unit-token and nameplate API restrictions. The nameplate-attach logic is unaffected: `UnitIsUnit` with a `target`/`softenemy` operand and `C_NamePlate.GetNamePlateForUnit("target")` both remain permitted, and the blocked `UnitTarget` API is not used. No functional changes.
+
+---
+
 ## [1.6.0] - 2026-03-10
 
 ### Custom Color Mode & Flicker Fix

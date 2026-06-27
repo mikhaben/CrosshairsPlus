@@ -2,7 +2,7 @@
 ## Title: CrosshairsPlus
 ## Notes: Enhanced crosshair addon with customizable target filtering and visual styles
 ## Author: justLuther
-## Version: 1.6.0
+## Version: 1.6.1
 ## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\Logo
 ## SavedVariables: CrosshairsPlusDB
 
