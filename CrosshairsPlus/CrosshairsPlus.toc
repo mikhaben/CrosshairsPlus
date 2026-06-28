@@ -5,6 +5,8 @@
 ## Version: 1.6.1
 ## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\Logo
 ## SavedVariables: CrosshairsPlusDB
+## X-Curse-Project-ID: 1381856
+## X-Wago-ID: aN0YQv6j
 
 # Libraries
 Libs/LibStub/LibStub.lua

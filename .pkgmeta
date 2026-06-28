@@ -1,0 +1,38 @@
+# BigWigsMods/packager configuration — https://github.com/BigWigsMods/packager
+# This repo ships two addon folders: the main CrosshairsPlus and the LoadOnDemand
+# CrosshairsPlus_Range sub-addon. move-folders lifts both to the zip top level
+# (the same pattern WeakAuras uses). Libraries are embedded — no externals to fetch.
+
+package-as: CrosshairsPlus
+
+move-folders:
+  CrosshairsPlus/CrosshairsPlus: CrosshairsPlus
+  CrosshairsPlus/CrosshairsPlus_Range: CrosshairsPlus_Range
+
+# Libs are embedded → no "nolib" variant needed.
+enable-nolib-creation: no
+
+# Per-version changelog shown on CurseForge/Wago. The workflow copies
+# release-notes/<version>.md to CHANGELOG.md before packaging.
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+# Repo-root files kept OUT of the package (paths are relative to the repo root).
+# The two addon folders are relocated by move-folders above, so only meta/dev
+# files need excluding here.
+ignore:
+  - .github
+  - .pkgmeta
+  - .gitignore
+  - .claude
+  - README.md
+  - CLAUDE.md
+  - MARKETING.md
+  - CONVERT.md
+  - build
+  - build.sh
+  - deploy.sh
+  - release-notes
+  - CHANGELOG.md
+  - .DS_Store

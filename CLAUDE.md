@@ -18,10 +18,13 @@ CrosshairsPlus displays a customizable crosshair overlay on your target's namepl
 CrosshairsPlus/                  # Project root (.git here)
 ├── CLAUDE.md                    # This file
 ├── README.md                    # User-facing documentation
-├── RELEASE_NOTES.md             # Version changelog
+├── release-notes/               # Per-version changelogs (release-notes/<version>.md)
 ├── MARKETING.md                 # CurseForge marketing copy
 ├── CONVERT.md                   # SVG-to-TGA asset conversion guide
-├── build.sh                     # Build script
+├── build.sh                     # Build script (manual local zip)
+├── .pkgmeta                     # BigWigsMods packager config (move-folders, manual-changelog)
+├── .github/workflows/
+│   └── release.yml              # CI: on tag push, package + upload to CurseForge/Wago/GitHub
 ├── .gitignore
 │
 ├── CrosshairsPlus/              # Main addon folder
@@ -207,14 +210,21 @@ LibRangeCheck-3.0 lives in the `CrosshairsPlus_Range` LoadOnDemand sub-addon. `R
 
 ## Build & Release
 
-```bash
-./build.sh
-```
+Releases are published by GitHub Actions (`.github/workflows/release.yml`) via the
+[BigWigsMods packager](https://github.com/BigWigsMods/packager), triggered on a pushed
+version tag (`v*`). Because the repo has two addon folders, `.pkgmeta` uses `move-folders`
+to place `CrosshairsPlus/` and `CrosshairsPlus_Range/` at the zip top level.
 
-- Reads version from TOC `## Version:` field
-- Output: `build/CrosshairsPlus_VERSION_YYYY-MM-DD.zip`
-- ZIP contains both `CrosshairsPlus/` and `CrosshairsPlus_Range/` folders
-- Upload to CurseForge
+Per-version changelog: the CurseForge/Wago description comes from `release-notes/<version>.md`
+(copied to `CHANGELOG.md` by the workflow, fed to the packager via `manual-changelog`).
+
+Release: bump `## Version` in `CrosshairsPlus/CrosshairsPlus.toc`, add `release-notes/<version>.md`,
+commit, then `git tag vX.Y.Z && git push origin vX.Y.Z`. Requires repo secrets `CF_API_KEY` +
+`WAGO_API_KEY` (both, or deploy is skipped); project IDs live in the main TOC
+(`X-Curse-Project-ID`, `X-Wago-ID`).
+
+`./build.sh` remains for manual local zips — reads the TOC version, outputs
+`build/CrosshairsPlus_VERSION_YYYY-MM-DD.zip` containing both addon folders.
 
 ## Adding New Assets
 

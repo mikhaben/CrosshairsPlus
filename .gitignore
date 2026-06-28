@@ -44,6 +44,8 @@ settings.local.json
 
 # Build artifacts (if using packager)
 .release/
-.pkgmeta
 *.toc.bak
 build/
+
+# Generated at CI from release-notes/<version>.md (packager manual-changelog)
+CHANGELOG.md

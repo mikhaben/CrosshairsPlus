@@ -60,6 +60,20 @@ The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP
 | `/console taintLog 2` | Enable taint logging |
 | `/framestack` | Show frame hierarchy under cursor |
 
+## Releasing
+
+Releases are published automatically by GitHub Actions (`.github/workflows/release.yml`)
+when you push a version tag, using the [BigWigsMods packager](https://github.com/BigWigsMods/packager).
+
+1. Bump `## Version` in `CrosshairsPlus/CrosshairsPlus.toc` and add `release-notes/<version>.md`
+   (this becomes the changelog shown on CurseForge/Wago).
+2. Commit, then `git tag vX.Y.Z && git push origin vX.Y.Z`.
+3. The workflow packages both `CrosshairsPlus/` and `CrosshairsPlus_Range/` and uploads to
+   CurseForge, Wago, and GitHub Releases.
+
+Requires the `CF_API_KEY` and `WAGO_API_KEY` repo secrets (both, or the upload is skipped).
+`build.sh` remains for manual local packaging.
+
 ## Credits
 
 **Author:** asp1d | **License:** All Rights Reserved
@@ -69,4 +83,4 @@ The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP
 - **Mesostealthy** - weizPvP inspiration
 - **semlar** - Crosshairs addon inspiration
 
-See [RELEASE_NOTES.md](RELEASE_NOTES.md) for the full changelog.
+See the [`release-notes/`](release-notes/) folder for per-version changelogs.
