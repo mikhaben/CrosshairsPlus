@@ -25,6 +25,8 @@ ignore:
   - .github
   - .pkgmeta
   - .gitignore
+  - .env
+  - .env.example
   - .claude
   - README.md
   - CLAUDE.md
@@ -32,7 +34,7 @@ ignore:
   - CONVERT.md
   - build
   - build.sh
-  - deploy.sh
+  - deploy-local.sh
   - release-notes
   - CHANGELOG.md
   - .DS_Store
