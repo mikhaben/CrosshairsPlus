@@ -1,6 +1,8 @@
 # CrosshairsPlus
 
-**Interface:** 120007 (The War Within / Midnight) | **Author:** asp1d
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+**Interface:** 120007 (The War Within / Midnight) | **Author:** justLuther
 
 A World of Warcraft addon that displays a customizable crosshair overlay on your target's nameplate. Great for PvP targeting and raid awareness.
 
@@ -76,7 +78,7 @@ Requires the `CF_API_KEY` and `WAGO_API_KEY` repo secrets (both, or the upload i
 
 ## Credits
 
-**Author:** asp1d | **License:** All Rights Reserved
+**Author:** justLuther
 
 **Special Thanks:**
 - **ElvUI** - Arrow icon textures
@@ -84,3 +86,11 @@ Requires the `CF_API_KEY` and `WAGO_API_KEY` repo secrets (both, or the upload i
 - **semlar** - Crosshairs addon inspiration
 
 See the [`release-notes/`](release-notes/) folder for per-version changelogs.
+
+## Contributing
+
+Found a bug or have a feature request? Open an issue or submit a pull request — see [CONTRIBUTING.md](CONTRIBUTING.md) for how to build, test, and what to expect in review.
+
+## License
+
+CrosshairsPlus is released under the [MIT License](LICENSE).

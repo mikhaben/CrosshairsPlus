@@ -118,7 +118,7 @@ A: Yes! Leave a comment with your suggestions and I'll consider adding them in f
 A: CrosshairsPlus works on your current hard target. It also supports WoW's Action Targeting for soft enemy targets when enabled and when there's no hard target. Focus target support is planned for a future update.
 
 **Q: Can I change the colors manually?**
-A: Currently colors are automatic based on class/reaction. Custom color picker is planned for a future update.
+A: Yes! Set Color Mode to "Custom" in the General settings tab and pick your own enemy and friendly colors with the color picker. Reaction and Class modes are still available if you'd rather have colors assigned automatically.
 
 **Q: How does the range display work?**
 A: Range display uses LibRangeCheck-3.0 via the CrosshairsPlus_Range sub-addon (included in the download). It loads on demand when you enable the range feature, so there's no performance cost when disabled. Make sure both CrosshairsPlus and CrosshairsPlus_Range are in your AddOns folder.

@@ -6,9 +6,9 @@
 - **Language:** Lua + XML
 - **Version:** (see TOC file)
 - **Interface:** 120007 (Midnight / The War Within)
-- **Author:** asp1d (TOC author: justLuther)
+- **Author:** justLuther
 - **SavedVariables:** `CrosshairsPlusDB`
-- **License:** All Rights Reserved
+- **License:** MIT
 
 CrosshairsPlus displays a customizable crosshair overlay on your target's nameplate. Features 73 arrow styles, 6 circle styles with glow/shadow effects, range display via LibRangeCheck-3.0, target info display, LibSharedMedia font integration, and target filtering.
 
@@ -18,13 +18,18 @@ CrosshairsPlus displays a customizable crosshair overlay on your target's namepl
 CrosshairsPlus/                  # Project root (.git here)
 ├── CLAUDE.md                    # This file
 ├── README.md                    # User-facing documentation
+├── LICENSE                      # MIT, copyright justLuther (ships in the release zip)
+├── CONTRIBUTING.md              # Build/test/style guide for contributors (excluded from zip)
 ├── release-notes/               # Per-version changelogs (release-notes/<version>.md)
 ├── MARKETING.md                 # CurseForge marketing copy
 ├── CONVERT.md                   # SVG-to-TGA asset conversion guide
 ├── build.sh                     # Build script (manual local zip)
 ├── .pkgmeta                     # BigWigsMods packager config (move-folders, manual-changelog)
-├── .github/workflows/
-│   └── release.yml              # CI: on tag push, package + upload to CurseForge/Wago/GitHub
+├── .github/
+│   ├── workflows/
+│   │   └── release.yml          # CI: on tag push (tag must be on main), package + upload to CurseForge/Wago/GitHub
+│   ├── ISSUE_TEMPLATE/          # Bug report + feature request templates
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── .gitignore
 │
 ├── CrosshairsPlus/              # Main addon folder

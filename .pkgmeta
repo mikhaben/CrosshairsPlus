@@ -30,6 +30,7 @@ ignore:
   - .claude
   - README.md
   - CLAUDE.md
+  - CONTRIBUTING.md
   - MARKETING.md
   - CONVERT.md
   - build
