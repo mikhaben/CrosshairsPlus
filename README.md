@@ -1,6 +1,9 @@
 # CrosshairsPlus
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?logo=curseforge&logoColor=white)](https://www.curseforge.com/wow/addons/crosshairsplus)
+[![Wago](https://img.shields.io/badge/Wago-Download-A34FE0)](https://addons.wago.io/addons/crosshairsplus)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/justluther)
 
 **Interface:** 120007 (The War Within / Midnight) | **Author:** justLuther
 
