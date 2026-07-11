@@ -69,7 +69,8 @@ when you push a version tag, using the [BigWigsMods packager](https://github.com
 
 1. Bump `## Version` in `CrosshairsPlus/CrosshairsPlus.toc` and add `release-notes/<version>.md`
    (this becomes the changelog shown on CurseForge/Wago).
-2. Commit, then `git tag vX.Y.Z && git push origin vX.Y.Z`.
+2. Land the bump on `main` via pull request (direct pushes to `main` are blocked),
+   then `git tag vX.Y.Z && git push origin vX.Y.Z` — only tags on `main` are published.
 3. The workflow packages both `CrosshairsPlus/` and `CrosshairsPlus_Range/` and uploads to
    CurseForge, Wago, and GitHub Releases.
 

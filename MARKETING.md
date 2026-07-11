@@ -18,6 +18,9 @@ Customizable crosshair overlay for your target's nameplate. 73 arrow styles, 6 c
 
 ## Full Description
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/justluther)
+[![GitHub](https://img.shields.io/badge/GitHub-Source_Code-181717?style=for-the-badge&logo=github)](https://github.com/mikhaben/CrosshairsPlus)
+
 ### What is CrosshairsPlus?
 
 CrosshairsPlus displays a customizable visual crosshair on your current target's nameplate. Perfect for PvP targeting, raid awareness, or improving your gameplay focus.
