@@ -146,7 +146,9 @@ function CPlusNS.GetUnitColor(unit)
 
     if mode == "class" and UnitIsPlayer(unit) then
         local _, class = UnitClass(unit)
-        if class and RAID_CLASS_COLORS[class] then
+        -- UnitClass returns secret values when the unit's identity is restricted
+        -- (SecretWhenUnitIdentityRestricted, 12.1.x); secrets can't be table keys.
+        if not issecretvalue(class) and class and RAID_CLASS_COLORS[class] then
             local color = RAID_CLASS_COLORS[class]
             return color.r, color.g, color.b
         end

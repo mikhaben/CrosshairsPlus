@@ -4,7 +4,7 @@
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?logo=curseforge&logoColor=white)](https://www.curseforge.com/wow/addons/crosshairsplus)
 [![Wago](https://img.shields.io/badge/Wago-Download-A34FE0)](https://addons.wago.io/addons/crosshairsplus)
 
-**Interface:** 120007 (The War Within / Midnight) | **Author:** justLuther
+**Interface:** 120105 (The War Within / Midnight) | **Author:** justLuther
 
 A World of Warcraft addon that displays a customizable crosshair overlay on your target's nameplate. Great for PvP targeting and raid awareness.
 

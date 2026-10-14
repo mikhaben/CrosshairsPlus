@@ -1,8 +1,8 @@
-## Interface: 120007
+## Interface: 120105
 ## Title: CrosshairsPlus
 ## Notes: Enhanced crosshair addon with customizable target filtering and visual styles
 ## Author: justLuther
-## Version: 1.6.1
+## Version: 1.6.2
 ## IconTexture: Interface\AddOns\CrosshairsPlus\Assets\Logo
 ## SavedVariables: CrosshairsPlusDB
 ## X-Curse-Project-ID: 1381856
