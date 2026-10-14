@@ -5,7 +5,7 @@
 - **Type:** World of Warcraft addon
 - **Language:** Lua + XML
 - **Version:** (see TOC file)
-- **Interface:** 120007 (Midnight / The War Within)
+- **Interface:** 120105 (Midnight / The War Within)
 - **Author:** justLuther
 - **SavedVariables:** `CrosshairsPlusDB`
 - **License:** MIT
