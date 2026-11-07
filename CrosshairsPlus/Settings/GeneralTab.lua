@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - General Tab (AceConfig)
-    Target filters and visual options — flat layout, no sidebar
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildGeneralTab()
@@ -32,9 +27,6 @@ function CPlusNS.BuildGeneralTab()
                     return #CPlusNS.CheckNameplateCVars() == 0
                 end,
             },
-            -- ==========================================
-            -- ENEMY TARGETS
-            -- ==========================================
             enemyHeader = {
                 type = "header",
                 name = "Enemy Targets",
@@ -80,9 +72,6 @@ function CPlusNS.BuildGeneralTab()
                 set = function(_, v) CPlusNS.db.showEnemyCritters = v; CPlusNS.UpdateCrosshairVisuals() end,
             },
 
-            -- ==========================================
-            -- FRIENDLY TARGETS
-            -- ==========================================
             friendlyHeader = {
                 type = "header",
                 name = "Friendly Targets",
@@ -128,9 +117,6 @@ function CPlusNS.BuildGeneralTab()
                 set = function(_, v) CPlusNS.db.showFriendlyCritters = v; CPlusNS.UpdateCrosshairVisuals() end,
             },
 
-            -- ==========================================
-            -- ACTION TARGETING
-            -- ==========================================
             actionTargetingHeader = {
                 type = "header",
                 name = "Action Targeting",
@@ -146,9 +132,6 @@ function CPlusNS.BuildGeneralTab()
                 set = function(_, v) CPlusNS.db.enableActionTargeting = v; CPlusNS.UpdateCrosshairVisuals() end,
             },
 
-            -- ==========================================
-            -- VISUAL OPTIONS
-            -- ==========================================
             visualHeader = {
                 type = "header",
                 name = "Visual Options",
@@ -249,9 +232,6 @@ function CPlusNS.BuildGeneralTab()
                 order = 33.5,
             },
 
-            -- ==========================================
-            -- RESET
-            -- ==========================================
             resetHeader = {
                 type = "header",
                 name = "",

@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - Settings Initialization (AceConfig)
-    Assembles all tabs and registers with AceConfig + Blizzard Options
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.InitializeSettings()
@@ -10,7 +5,6 @@ function CPlusNS.InitializeSettings()
         print("|cff00ff00CrosshairsPlus|r: InitializeSettings called (AceConfig)")
     end
 
-    -- Check if range sub-addon is available (installed and not disabled by user)
     local rangeAvailable = C_AddOns.GetAddOnEnableState("CrosshairsPlus_Range") > 0
 
     local options = {

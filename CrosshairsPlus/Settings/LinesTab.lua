@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - Lines Tab (AceConfig)
-    Crosshair lines display options — flat layout
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildLinesTab()

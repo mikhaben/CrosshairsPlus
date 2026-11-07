@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - Target Info Tab (AceConfig)
-    Target info display options — flat layout
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildTargetInfoTab()
@@ -11,7 +6,6 @@ function CPlusNS.BuildTargetInfoTab()
         name = "Target Info",
         order = 6,
         args = {
-            -- Display
             showTargetInfo = {
                 type = "toggle",
                 name = "Enable Target Info",
@@ -50,7 +44,6 @@ function CPlusNS.BuildTargetInfoTab()
                 name = " ",
                 order = 4,
             },
-            -- Font
             targetInfoFont = CPlusNS.BuildFontSelect("targetInfoFont", 5, function() return not CPlusNS.db.showTargetInfo end),
             targetInfoFontSize = {
                 type = "range",
@@ -67,7 +60,6 @@ function CPlusNS.BuildTargetInfoTab()
                 name = " ",
                 order = 7,
             },
-            -- Position
             targetInfoPosition = {
                 type = "select",
                 name = "Anchor",

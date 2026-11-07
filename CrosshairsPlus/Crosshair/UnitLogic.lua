@@ -1,15 +1,9 @@
---[[
-    CrosshairsPlus - Enhanced Crosshair Addon
-    Crosshair/UnitLogic.lua - Unit filtering, color logic, and nameplate CVar checks
-]]--
-
 local _, CPlusNS = ...
 
 local function IsHostile(unit)
     return UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)
 end
 
--- Check if target should show crosshair based on user settings
 function CPlusNS.ShouldShowCrosshair(unit)
     if not unit or not UnitExists(unit) then
         return false
@@ -23,7 +17,6 @@ function CPlusNS.ShouldShowCrosshair(unit)
 
     local isHostile = IsHostile(unit)
 
-    -- Check if unit is a player
     if UnitIsPlayer(unit) then
         if isHostile then
             return db.showEnemy and db.showEnemyPlayers
@@ -31,7 +24,6 @@ function CPlusNS.ShouldShowCrosshair(unit)
             return db.showFriendly and db.showFriendlyPlayers
         end
     else
-        -- NPC/Creature (including hunter/warlock pets)
         local classification = UnitClassification(unit)
         local isCritter = (classification == "trivial" or classification == "minus")
 
@@ -49,7 +41,6 @@ function CPlusNS.ShouldShowCrosshair(unit)
     end
 end
 
--- Check nameplate CVars and return table of warning strings
 function CPlusNS.CheckNameplateCVars()
     local warnings = {}
     local db = CPlusNS.db
@@ -82,8 +73,6 @@ function CPlusNS.CheckNameplateCVars()
     return warnings
 end
 
--- Determine which unit (if any) the crosshair should follow
--- Hard target always takes priority over soft enemy
 function CPlusNS.GetActiveUnit()
     if UnitExists("target") and CPlusNS.ShouldShowCrosshair("target") then
         return "target"
@@ -94,12 +83,9 @@ function CPlusNS.GetActiveUnit()
     return nil
 end
 
--- Reaction-based color (FACTION_BAR_COLORS with threat override)
 local function GetReactionColor(unit)
     local reaction = UnitReaction("player", unit)
 
-    -- Neutral mobs (reaction 4/yellow) stay reaction 4 even after you attack them.
-    -- Check threat to override to hostile red when the player has aggroed the mob.
     if reaction and reaction == 4 and UnitThreatSituation("player", unit) ~= nil then
         local color = FACTION_BAR_COLORS[2]
         return color.r, color.g, color.b
@@ -110,7 +96,6 @@ local function GetReactionColor(unit)
         return color.r, color.g, color.b
     end
 
-    -- Fallback: hostile red, friendly green
     if IsHostile(unit) then
         return 1, 0, 0
     end
@@ -118,15 +103,13 @@ local function GetReactionColor(unit)
     return 0, 1, 0
 end
 
--- Get color for unit based on color mode setting
 function CPlusNS.GetUnitColor(unit)
     if not unit or not UnitExists(unit) then
-        return 1, 1, 1 -- Default white
+        return 1, 1, 1
     end
 
     local db = CPlusNS.db
 
-    -- Tapped by another player is always gray
     if UnitIsTapDenied(unit) then
         return 0.5, 0.5, 0.5
     end
@@ -146,14 +129,11 @@ function CPlusNS.GetUnitColor(unit)
 
     if mode == "class" and UnitIsPlayer(unit) then
         local _, class = UnitClass(unit)
-        -- UnitClass returns secret values when the unit's identity is restricted
-        -- (SecretWhenUnitIdentityRestricted, 12.1.x); secrets can't be table keys.
         if not issecretvalue(class) and class and RAID_CLASS_COLORS[class] then
             local color = RAID_CLASS_COLORS[class]
             return color.r, color.g, color.b
         end
     end
 
-    -- "reaction" mode, or "class" mode fallthrough for NPCs
     return GetReactionColor(unit)
 end

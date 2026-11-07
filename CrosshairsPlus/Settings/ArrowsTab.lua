@@ -1,12 +1,6 @@
---[[
-    CrosshairsPlus - Arrows Tab (AceConfig)
-    Arrow style dropdown, positioning, and rotation — flat layout
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildArrowsTab()
-    -- Build arrow style values and sorting for dropdown
     local arrowValues = { none = "None" }
     local arrowSorting = { "none" }
 

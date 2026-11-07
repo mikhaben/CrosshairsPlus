@@ -1,12 +1,6 @@
---[[
-    CrosshairsPlus - Enhanced Crosshair Addon
-    Crosshair/TargetInfo.lua - Target info text display and position
-]]--
-
 local _, CPlusNS = ...
 local state = CPlusNS.state
 
--- Set target info text (called once on target switch from AttachToNameplate)
 function CPlusNS.RefreshTargetInfoText()
     local frame = state.frame
 
@@ -39,7 +33,6 @@ function CPlusNS.RefreshTargetInfoText()
     if not frame.TargetInfoText:IsShown() then frame.TargetInfoText:Show() end
 end
 
--- Update target info color only (called from OnUpdate — lightweight)
 function CPlusNS.UpdateTargetInfoColor()
     if not CPlusNS.db.showTargetInfo or not CPlusNS.db.targetInfoUseTargetColor then
         return
@@ -55,7 +48,6 @@ function CPlusNS.UpdateTargetInfoColor()
     end
 end
 
--- Update target info text position and font size
 function CPlusNS.UpdateTargetInfoPosition()
     local frame = state.frame
     if not frame or not frame.TargetInfoText then return end

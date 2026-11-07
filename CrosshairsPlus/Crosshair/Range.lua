@@ -1,16 +1,9 @@
---[[
-    CrosshairsPlus - Enhanced Crosshair Addon
-    Crosshair/Range.lua - Range display text and position
-]]--
-
 local _, CPlusNS = ...
 local state = CPlusNS.state
 
--- Cache sub-addon availability once (nil = not checked yet)
 local rangeAddonAvailable = nil
 local rangeDisabledRuntime = false
 
--- Update range display text (called from OnUpdate every 0.3s)
 function CPlusNS.UpdateRangeDisplay()
     local frame = state.frame
     if not frame then return end
@@ -20,9 +13,7 @@ function CPlusNS.UpdateRangeDisplay()
         return
     end
 
-    -- Lazy-load LibRangeCheck from LoadOnDemand sub-addon
     if not CPlusNS.RC then
-        -- Check availability once
         if rangeAddonAvailable == nil then
             rangeAddonAvailable = C_AddOns.GetAddOnEnableState("CrosshairsPlus_Range") > 0
         end
@@ -44,13 +35,13 @@ function CPlusNS.UpdateRangeDisplay()
     end
 
     local minRange, maxRange = CPlusNS.RC:GetRange(state.activeUnit)
-    local rangeVal = maxRange or minRange  -- nil when out of range
+    local rangeVal = maxRange or minRange
     if rangeVal ~= state.lastRangeVal or (not maxRange and maxRange ~= state.lastMaxRange) then
         state.lastRangeVal = rangeVal
         state.lastMaxRange = maxRange
         local text
         if not minRange then
-            text = "\226\128\148" -- em dash (—) for out-of-range display
+            text = "\226\128\148"
         elseif maxRange then
             text = tostring(maxRange)
         else
@@ -59,7 +50,6 @@ function CPlusNS.UpdateRangeDisplay()
         frame.RangeText:SetText(text)
     end
 
-    -- Only call SetTextColor when the color actually changes
     local r, g, b
     if CPlusNS.db.rangeUseTargetColor then
         r, g, b = state.lastUnitR, state.lastUnitG, state.lastUnitB
@@ -74,7 +64,6 @@ function CPlusNS.UpdateRangeDisplay()
     if not frame.RangeText:IsShown() then frame.RangeText:Show() end
 end
 
--- Update range text position and font size
 function CPlusNS.UpdateRangePosition()
     local frame = state.frame
     if not frame or not frame.RangeText then return end

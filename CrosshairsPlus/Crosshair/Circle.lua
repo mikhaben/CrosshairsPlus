@@ -1,12 +1,6 @@
---[[
-    CrosshairsPlus - Enhanced Crosshair Addon
-    Crosshair/Circle.lua - Circle style switching
-]]--
-
 local _, CPlusNS = ...
 local state = CPlusNS.state
 
--- Update circle style
 function CPlusNS.UpdateCircleStyle()
     local frame = state.frame
     if not frame or not frame.Core then

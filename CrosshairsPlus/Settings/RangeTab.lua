@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - Range Tab (AceConfig)
-    Range display options — flat layout
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildRangeTab()
@@ -11,7 +6,6 @@ function CPlusNS.BuildRangeTab()
         name = "Range",
         order = 5,
         args = {
-            -- Display
             showRange = {
                 type = "toggle",
                 name = "Enable Range Display",
@@ -36,7 +30,6 @@ function CPlusNS.BuildRangeTab()
                 name = " ",
                 order = 3,
             },
-            -- Font
             rangeFont = CPlusNS.BuildFontSelect("rangeFont", 4, function() return not CPlusNS.db.showRange end),
             rangeFontSize = {
                 type = "range",
@@ -53,7 +46,6 @@ function CPlusNS.BuildRangeTab()
                 name = " ",
                 order = 6,
             },
-            -- Position
             rangePosition = {
                 type = "select",
                 name = "Anchor",

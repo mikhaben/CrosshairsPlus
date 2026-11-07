@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - About Tab (AceConfig)
-    Version info and slash commands
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildAboutTab()

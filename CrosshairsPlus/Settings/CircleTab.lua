@@ -1,8 +1,3 @@
---[[
-    CrosshairsPlus - Circle Tab (AceConfig)
-    Circle style options — flat layout
-]]--
-
 local _, CPlusNS = ...
 
 function CPlusNS.BuildCircleTab()
