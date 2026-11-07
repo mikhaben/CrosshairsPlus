@@ -4,7 +4,7 @@ Thanks for your interest! Bug reports, feature requests, and pull requests are a
 
 ## Building locally
 
-No toolchain needed beyond bash and zip.
+No toolchain needed beyond bash and zip. Before opening a PR, run `./check.sh` (needs `brew install luacheck ast-grep`): it lints with [luacheck](https://github.com/lunarmodules/luacheck), rejects code comments, and caps a Lua file at 1000 lines.
 
 ```bash
 ./build.sh
@@ -35,7 +35,8 @@ There is no automated test suite; testing is in-game:
 
 Match the surrounding code. In particular:
 
-- 4-space indentation, Lua, every file starts with `local AddonName, CPlusNS = ...` and reads/writes shared state via `CPlusNS.state`, `CPlusNS.db`, `CPlusNS.CONST`.
+- No comments in the code: say it with a name, and put the reason for a change in the commit message. `./check.sh` rejects them.
+- 4-space indentation, Lua, every file starts with `local _, CPlusNS = ...` (`AddonName` in place of `_` where the file uses it) and reads/writes shared state via `CPlusNS.state`, `CPlusNS.db`, `CPlusNS.CONST`.
 - Persisted settings go in `CPlusNS.defaults` (Core.lua); new settings must be added there so `MergeDefaults` handles upgrades. Runtime-only state goes in `CPlusNS.state` and is never persisted.
 - Settings widgets are built with AceConfig/AceGUI (see `Settings/*.lua`); every widget's `set` function should call `CPlusNS.UpdateCrosshairVisuals()` to refresh visuals.
 - Avoid per-frame allocations in `Crosshair/OnUpdate.lua` — cache math functions and reused variables to locals, and follow the existing change-detection pattern (e.g. `state.lastUnit*`, `state.lastRangeVal`) instead of recomputing every frame.
