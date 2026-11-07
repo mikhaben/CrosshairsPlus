@@ -200,8 +200,8 @@ SlashCmdList["CROSSHAIRSPLUS"] = function(msg)
 
     if msg == "debug" then
         -- Toggle debug mode
-        if CrosshairsPlus.ToggleDebug then
-            CrosshairsPlus.ToggleDebug()
+        if CPlusNS.ToggleDebug then
+            CPlusNS.ToggleDebug()
         end
     elseif msg == "test" then
         CPlusNS.RunDiagnostics()

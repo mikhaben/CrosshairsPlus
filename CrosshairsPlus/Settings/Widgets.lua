@@ -3,7 +3,7 @@
     Reusable AceConfig widget builders
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 local LSM = CPlusNS.LSM
 

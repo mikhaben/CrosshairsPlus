@@ -3,9 +3,8 @@
     Crosshair/Init.lua - Initialization, event handlers, master update, and debug toggle
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
-local defaults = CPlusNS.defaults
 
 -- Update all crosshair visuals (called from settings panel)
 function CPlusNS.UpdateCrosshairVisuals()

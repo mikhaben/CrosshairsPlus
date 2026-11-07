@@ -3,7 +3,7 @@
     Crosshair/Attach.lua - Color application, frame settings, nameplate attachment, and active unit management
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 local CONST = CPlusNS.CONST
 

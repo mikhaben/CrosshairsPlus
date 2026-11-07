@@ -3,7 +3,7 @@
     Target filters and visual options — flat layout, no sidebar
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildGeneralTab()
     return {

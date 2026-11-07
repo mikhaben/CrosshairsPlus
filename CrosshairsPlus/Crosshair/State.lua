@@ -3,7 +3,7 @@
     Crosshair/State.lua - Shared runtime state, constants, and library references
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local defaults = CPlusNS.defaults
 
 -- Internal runtime state (not settings, not persisted)

@@ -3,7 +3,7 @@
     Crosshair/Arrows.lua - Arrow style, static positioning, rotation animation, and rotation cache
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 local CONST = CPlusNS.CONST
 

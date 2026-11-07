@@ -3,7 +3,7 @@
     Version info and slash commands
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildAboutTab()
     return {

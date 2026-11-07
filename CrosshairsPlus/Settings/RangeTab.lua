@@ -3,7 +3,7 @@
     Range display options — flat layout
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildRangeTab()
     return {

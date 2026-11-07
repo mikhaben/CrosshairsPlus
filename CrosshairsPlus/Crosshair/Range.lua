@@ -3,7 +3,7 @@
     Crosshair/Range.lua - Range display text and position
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 
 -- Cache sub-addon availability once (nil = not checked yet)

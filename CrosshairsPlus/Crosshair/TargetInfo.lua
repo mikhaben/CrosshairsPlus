@@ -3,7 +3,7 @@
     Crosshair/TargetInfo.lua - Target info text display and position
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 
 -- Set target info text (called once on target switch from AttachToNameplate)

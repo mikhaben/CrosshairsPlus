@@ -3,7 +3,7 @@
     Arrow style dropdown, positioning, and rotation — flat layout
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildArrowsTab()
     -- Build arrow style values and sorting for dropdown

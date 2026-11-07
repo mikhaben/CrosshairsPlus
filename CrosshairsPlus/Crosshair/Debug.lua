@@ -3,7 +3,7 @@
     Crosshair/Debug.lua - Debug logging, diagnostics, and debug toggle
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 local PREFIX = "|cff00ff00[CHP]|r "
 

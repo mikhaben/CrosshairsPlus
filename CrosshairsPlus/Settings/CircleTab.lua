@@ -3,7 +3,7 @@
     Circle style options — flat layout
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildCircleTab()
     return {

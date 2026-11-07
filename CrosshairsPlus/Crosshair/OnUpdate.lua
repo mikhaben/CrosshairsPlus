@@ -3,7 +3,7 @@
     Crosshair/OnUpdate.lua - Per-frame update handler
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 local UPDATE_INTERVAL = CPlusNS.CONST.UPDATE_INTERVAL
 

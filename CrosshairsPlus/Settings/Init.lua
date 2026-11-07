@@ -3,7 +3,7 @@
     Assembles all tabs and registers with AceConfig + Blizzard Options
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.InitializeSettings()
     if CPlusNS.db and CPlusNS.db.debugMode then

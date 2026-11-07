@@ -3,7 +3,7 @@
     Crosshair/Circle.lua - Circle style switching
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 
 -- Update circle style

@@ -3,7 +3,7 @@
     Crosshair/Lines.lua - Line thickness, gap, and visibility
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 local state = CPlusNS.state
 local CONST = CPlusNS.CONST
 

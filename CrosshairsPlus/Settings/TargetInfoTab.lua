@@ -3,7 +3,7 @@
     Target info display options — flat layout
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 function CPlusNS.BuildTargetInfoTab()
     return {

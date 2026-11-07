@@ -3,7 +3,7 @@
     Crosshair/UnitLogic.lua - Unit filtering, color logic, and nameplate CVar checks
 ]]--
 
-local AddonName, CPlusNS = ...
+local _, CPlusNS = ...
 
 local function IsHostile(unit)
     return UnitCanAttack("player", unit) or UnitIsEnemy("player", unit)
