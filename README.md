@@ -4,7 +4,7 @@
 [![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?logo=curseforge&logoColor=white)](https://www.curseforge.com/wow/addons/crosshairsplus)
 [![Wago](https://img.shields.io/badge/Wago-Download-A34FE0)](https://addons.wago.io/addons/crosshairsplus)
 
-**Interface:** 120105 (The War Within / Midnight) | **Author:** justLuther
+**Author:** justLuther
 
 A World of Warcraft addon that displays a customizable crosshair overlay on your target's nameplate. Great for PvP targeting and raid awareness.
 
@@ -54,7 +54,7 @@ git clone <repo>
 
 The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP.
 
-**Project structure:** Crosshair modules live in `CrosshairsPlus/Crosshair/` (11 files) and settings tabs in `CrosshairsPlus/Settings/` (9 files). See `CLAUDE.md` for full architecture reference.
+Before opening a PR, run `./check.sh` (see [CONTRIBUTING.md](CONTRIBUTING.md)). The architecture notes are in [AGENTS.md](AGENTS.md).
 
 **Useful Console Commands:**
 
@@ -66,18 +66,8 @@ The build includes both `CrosshairsPlus/` and `CrosshairsPlus_Range/` in the ZIP
 
 ## Releasing
 
-Releases are published automatically by GitHub Actions (`.github/workflows/release.yml`)
-when you push a version tag, using the [BigWigsMods packager](https://github.com/BigWigsMods/packager).
-
-1. Bump `## Version` in `CrosshairsPlus/CrosshairsPlus.toc` and add `release-notes/<version>.md`
-   (this becomes the changelog shown on CurseForge/Wago).
-2. Land the bump on `main` via pull request (direct pushes to `main` are blocked),
-   then `git tag vX.Y.Z && git push origin vX.Y.Z` — only tags on `main` are published.
-3. The workflow packages both `CrosshairsPlus/` and `CrosshairsPlus_Range/` and uploads to
-   CurseForge, Wago, and GitHub Releases.
-
-Requires the `CF_API_KEY` and `WAGO_API_KEY` repo secrets (both, or the upload is skipped).
-`build.sh` remains for manual local packaging.
+Releases are cut by the maintainer by pushing a version tag on `main`; the steps are in the header of
+[`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 ## Credits
 

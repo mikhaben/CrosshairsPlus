@@ -25,11 +25,15 @@ ignore:
   - .github
   - .pkgmeta
   - .gitignore
+  - .luacheckrc
+  - check.sh
+  - sgconfig.yml
+  - lint-rules
   - .env
   - .env.example
   - .claude
   - README.md
-  - CLAUDE.md
+  - AGENTS.md
   - CONTRIBUTING.md
   - MARKETING.md
   - CONVERT.md
